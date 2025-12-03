@@ -17,6 +17,7 @@ public enum ErrorCode {
     TOKEN_INVALID("token không hợp lệ"),
     INTERNAL_ERROR("lỗi jwt"),
     CATEGORY_EXIST("Danh mục đã tồn tại"),CATEGORY_ALREADY_ASSIGNED("Đã gán danh mục này"),
+    AMOUNT_NOT_NEGATIVE("Số tiền không phải số âm"),
 
 
     INVALID_REQUEST("Yêu cầu không hợp lệ");

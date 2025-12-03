@@ -43,7 +43,9 @@ public class TransactionServiceImpl implements TransactionService {
         }
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-
+        if (request.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+            throw new AppException(ErrorCode.AMOUNT_NOT_NEGATIVE );
+        }
         BigDecimal balance  =wallet.getBalance();
         BigDecimal amount  =request.getAmount();
 

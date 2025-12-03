@@ -1,0 +1,114 @@
+package com.duybao.QUANLYCHITIEU.Controller;
+
+import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
+import com.duybao.QUANLYCHITIEU.Response.User.Request.UpdateUserRequest;
+import com.duybao.QUANLYCHITIEU.Response.User.UserDTO;
+import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
+import com.duybao.QUANLYCHITIEU.Response.category.CategoryResponse;
+import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
+import com.duybao.QUANLYCHITIEU.Service.UserCategoryService;
+import com.duybao.QUANLYCHITIEU.Service.UserService;
+import com.duybao.QUANLYCHITIEU.Service.JwtService;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@RestController
+@RequestMapping("/users")
+@RequiredArgsConstructor
+public class UserController {
+    private final UserService userService;
+    private final JwtService jwtService;
+    private  final UserCategoryService userCategoryService;
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("")
+    public ApiResponse<List<UserDTO>> getAllUser() {
+        List<UserDTO> users = userService.getAllUser();
+
+        return ApiResponse.<List<UserDTO>>builder()
+                .success(true)
+                .message("Tất cả người dùng")
+                .data(users)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @GetMapping("/info")
+    public ApiResponse<UserDTO> getCurrentUser(@RequestHeader("Authorization") String tokenjwt) {
+        String token = tokenjwt.substring(7).trim();
+        Long userId = jwtService.extractUserId(token);
+
+        return ApiResponse.<UserDTO>builder()
+                .data(userService.getUser(userId))
+                .success(true)
+                .message("Lấy thông tin người dùng")
+
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+
+    @PutMapping("/updateinfo")
+    public ApiResponse<UserDTO> updateUser(@RequestHeader("Authorization") String tokenjwt, @RequestBody UpdateUserRequest userRequest) {
+        String token = tokenjwt.substring(7).trim();
+        Long userId = jwtService.extractUserId(token);
+        UserDTO kq= userService.updateUser(userId, userRequest);
+        return ApiResponse.<UserDTO>builder()
+                .success(true)
+                .message("Cập nhật thông tin thành công")
+                .data(kq)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+    @PostMapping("/me/categories")
+    public ApiResponse<CategoryResponse> createCategoryForMe(
+            @RequestBody CategoryRequest req,
+            @AuthenticationPrincipal CustomUserDetail userDetails) {
+
+        Long userId = userDetails.getUser().getId(); // hoặc claim key khác
+        CategoryResponse res = userCategoryService.createAndAssignCategory(userId, req);
+        return ApiResponse.<CategoryResponse>builder()
+                .success(true)
+                .message("Tạo và gán danh mục thành công thành công")
+                .data(res)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+    @PostMapping("/me/categories/{categoryId}")
+    public ApiResponse<CategoryResponse> AssignCategoryForMe(
+            @PathVariable Long categoryId,
+            @AuthenticationPrincipal CustomUserDetail userDetails) {
+
+        Long userId = userDetails.getUser().getId();
+        CategoryResponse res = userCategoryService.assignExistingCategory(userId, categoryId);
+        return ApiResponse.<CategoryResponse>builder()
+                .success(true)
+                .message("Gán danh mục thành công thành công")
+                .data(res)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @DeleteMapping("/me/categories/{categoryId}")
+    public ApiResponse<Void> removeCategoryForMe(
+            @PathVariable Long categoryId,
+            @AuthenticationPrincipal  CustomUserDetail userDetails) {
+
+        Long userId = userDetails.getUser().getId();
+        userCategoryService.removeCategoryFromUser(userId, categoryId);
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .message("Gỡ danh mục thành công thành công")
+                .data(null)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+}

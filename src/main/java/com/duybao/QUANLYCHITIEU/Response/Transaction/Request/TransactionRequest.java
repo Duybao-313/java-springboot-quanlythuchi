@@ -6,22 +6,21 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TransactionRequest {
-    @NotNull
+    @NotNull(message = "Số tiền không được để trống")
     private BigDecimal amount;
 
-    @NotNull
+    @NotNull(message = "Loại giao dịch không được để trống")
     private TransactionType type;
 
     private String description;
 
-    @NotNull
+    @NotNull(message = "Ví không được để trống")
     private Long walletId;
 
-    @NotNull
+    @NotNull(message = "Danh mục không được để trống")
     private Long categoryId;
 }

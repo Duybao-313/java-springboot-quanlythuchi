@@ -49,9 +49,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 
         if (request.getType() == TransactionType.EXPENSE) {
-            if (balance.compareTo(amount) < 0) {
-                throw new AppException(ErrorCode.WALLET_NOT_ENOUGH);
-            }
+
             wallet.setBalance(balance.subtract(amount));
         } else if (request.getType() == TransactionType.INCOME) {
             wallet.setBalance(balance.add(amount));

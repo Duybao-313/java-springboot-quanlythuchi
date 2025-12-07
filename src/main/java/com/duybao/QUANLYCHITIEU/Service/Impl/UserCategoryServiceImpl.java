@@ -48,13 +48,14 @@ public class UserCategoryServiceImpl implements UserCategoryService {
             // Nếu đã tồn tại category cùng tên (theo normalize) => ném lỗi theo yêu cầu
             throw new AppException(ErrorCode.CATEGORY_EXIST);
         }
-
+User user=userRepository.findById(userId).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
         // 2. Tạo category mới với tên **nguyên gốc từ req** (không lưu normalized)
         Category category = Category.builder()
                 .name(rawName)      // lưu tên theo request, không lưu normalized
                 .type(type)
                 .iconUrl(req.getIconUrl())
                 .color(req.getColor())
+                .owner(user)
                 .build();
 
         try {
@@ -64,10 +65,6 @@ public class UserCategoryServiceImpl implements UserCategoryService {
             // Nếu DB ném duplicate (race) thì chuyển thành lỗi nghiệp vụ CATEGORY_EXIST
             throw new AppException(ErrorCode.CATEGORY_EXIST);
         }
-
-        // 3. Lấy user và gán mapping nếu chưa có
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         Long catId = category.getId();
         boolean mappingExists = user.getCategories().stream()

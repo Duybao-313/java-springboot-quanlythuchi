@@ -9,6 +9,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
+    @Mapping(source = "owner.id", target = "ownerId")
     CategoryResponse toDTO(Category category);
     List<CategoryResponse> toDTOs(List<Category> categories);
 

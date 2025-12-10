@@ -16,4 +16,5 @@ public class CategoryResponse {
     private TransactionType type;   // EXPENSE hoặc INCOME
     private String iconUrl;
     private String color;
+    private Long ownerId;
 }

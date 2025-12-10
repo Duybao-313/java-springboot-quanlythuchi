@@ -9,6 +9,7 @@ import com.duybao.QUANLYCHITIEU.Repository.CategoryRepository;
 import com.duybao.QUANLYCHITIEU.Repository.UserRepository;
 import com.duybao.QUANLYCHITIEU.Response.category.CategoryResponse;
 import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
+import com.duybao.QUANLYCHITIEU.Service.ImageService;
 import com.duybao.QUANLYCHITIEU.Service.UserCategoryService;
 
 import jakarta.validation.ConstraintViolationException;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -27,11 +29,12 @@ public class UserCategoryServiceImpl implements UserCategoryService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final ImageService imageService;
 
 
 
     @Transactional
-    public CategoryResponse createAndAssignCategory(Long userId, CategoryRequest req) {
+    public CategoryResponse createAndAssignCategory(Long userId, CategoryRequest req, MultipartFile file) {
         String rawName = Optional.ofNullable(req.getName())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_REQUEST));
 
@@ -50,10 +53,16 @@ public class UserCategoryServiceImpl implements UserCategoryService {
         }
 User user=userRepository.findById(userId).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
         // 2. Tạo category mới với tên **nguyên gốc từ req** (không lưu normalized)
+        String icon=null;
+        try{
+            icon=imageService.uploadImage(file,"QLCT-image");
+        } catch (Exception ex) {
+            throw  new AppException(ErrorCode.READ_FILE_ERROR);
+        }
         Category category = Category.builder()
                 .name(rawName)      // lưu tên theo request, không lưu normalized
                 .type(type)
-                .iconUrl(req.getIconUrl())
+                .iconUrl(icon)
                 .color(req.getColor())
                 .owner(user)
                 .build();

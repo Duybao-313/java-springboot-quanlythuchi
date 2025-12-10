@@ -1,14 +1,20 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
+import com.duybao.QUANLYCHITIEU.Exception.AppException;
+import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
 import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
 import com.duybao.QUANLYCHITIEU.Response.category.CategoryResponse;
 import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
 import com.duybao.QUANLYCHITIEU.Service.CategoryService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,10 +26,16 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @PostMapping
-    public ApiResponse<CategoryResponse> createCategory(@RequestBody @Valid CategoryRequest request
-                                                      ) {
-        CategoryResponse category = categoryService.createCategory( request);
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<CategoryResponse> createCategory(
+            @RequestPart(name = "file", required = false) MultipartFile file,
+            @RequestPart(name = "data", required = false) String dataJson) throws JsonProcessingException {
+
+        if (dataJson == null || dataJson.isBlank()) {
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
+        CategoryRequest request = new ObjectMapper().readValue(dataJson, CategoryRequest.class);
+        CategoryResponse category = categoryService.createCategory(request, file);
         return ApiResponse.<CategoryResponse>builder()
                 .code("200")
                 .message("Tạo thành công danh mục")
@@ -34,7 +46,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ApiResponse<List<CategoryResponse>> getCategories(@AuthenticationPrincipal CustomUserDetail userDetails) {
+    public ApiResponse<List<CategoryResponse>> getCategories(@AuthenticationPrincipal CustomUserDetail userDetails){
         List<CategoryResponse> categories = categoryService.listAll();
         return ApiResponse.<List<CategoryResponse>>builder()
                 .message("Lấy thành công danh sách danh mục")
@@ -45,10 +57,15 @@ public class CategoryController {
     }
     @PutMapping("/{id}")
     public ApiResponse<CategoryResponse> updateCategory(@PathVariable Long id,
-                                                        @RequestBody CategoryRequest request) {
+                                                        @RequestPart(name = "file", required = false) MultipartFile file,
+                                                        @RequestPart(name = "data", required = false) String dataJson) throws JsonProcessingException  {
+        if (dataJson == null || dataJson.isBlank()) {
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
+        CategoryRequest request = new ObjectMapper().readValue(dataJson, CategoryRequest.class);
         return ApiResponse.<CategoryResponse>builder()
                 .message("Cập nhật danh mục thành công")
-                .data(categoryService.updateCategory(id, request))
+                .data(categoryService.updateCategory(id, request,file))
                 .success(true)
                 .code("200")
                 .timestamp(LocalDateTime.now())

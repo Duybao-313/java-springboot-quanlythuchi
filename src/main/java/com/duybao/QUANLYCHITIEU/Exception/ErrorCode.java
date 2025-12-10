@@ -19,6 +19,7 @@ public enum ErrorCode {
     CATEGORY_EXIST("Danh mục đã tồn tại"),
     CATEGORY_ALREADY_ASSIGNED("Đã gán danh mục này"),
     AMOUNT_NOT_NEGATIVE("Số tiền không phải số âm"),
+    READ_FILE_ERROR("Lỗi khi đọc file"),
 
 
     INVALID_REQUEST("Yêu cầu không hợp lệ");

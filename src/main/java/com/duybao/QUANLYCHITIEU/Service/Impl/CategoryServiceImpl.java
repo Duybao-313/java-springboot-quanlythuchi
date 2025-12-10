@@ -4,16 +4,17 @@ import com.duybao.QUANLYCHITIEU.Exception.AppException;
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Mappers.CategoryMapper;
 import com.duybao.QUANLYCHITIEU.Model.Category;
-import com.duybao.QUANLYCHITIEU.Model.User;
 import com.duybao.QUANLYCHITIEU.Repository.CategoryRepository;
 import com.duybao.QUANLYCHITIEU.Repository.UserRepository;
 import com.duybao.QUANLYCHITIEU.Response.category.CategoryResponse;
 import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
 import com.duybao.QUANLYCHITIEU.Service.CategoryService;
+import com.duybao.QUANLYCHITIEU.Service.ImageService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,10 +27,10 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final CategoryMapper categoryMapper;
-
+    private final ImageService imageService;
 
     @Transactional
-    public CategoryResponse createCategory(CategoryRequest req) {
+    public CategoryResponse createCategory(CategoryRequest req, MultipartFile file) {
         String name = Optional.ofNullable(req.getName()).map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_REQUEST));
@@ -40,12 +41,17 @@ public class CategoryServiceImpl implements CategoryService {
         if (categoryRepository.existsByNameIgnoreCase(name)) {
             throw new AppException(ErrorCode.CATEGORY_EXIST);
         }
-
+        String icon=null;
+        try{
+         icon=imageService.uploadImage(file,"QLCT-image");
+    } catch (Exception ex) {
+            throw  new AppException(ErrorCode.READ_FILE_ERROR);
+    }
         try {
             Category c = Category.builder()
                     .name(name)
                     .type(req.getType())
-                    .iconUrl(req.getIconUrl())
+                    .iconUrl(icon)
                     .color(req.getColor())
                     .build();
             c = categoryRepository.save(c);
@@ -56,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Transactional
-    public CategoryResponse updateCategory(Long id, CategoryRequest req) {
+    public CategoryResponse updateCategory(Long id, CategoryRequest req, MultipartFile file) {
         Category c = categoryRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 
@@ -66,10 +72,15 @@ public class CategoryServiceImpl implements CategoryService {
         if (!c.getName().equalsIgnoreCase(newName) && categoryRepository.existsByNameIgnoreCase(newName)) {
             throw new AppException(ErrorCode.CATEGORY_EXIST);
         }
-
+        String icon=null;
+        try{
+            icon=imageService.uploadImage(file,"QLCT-image");
+        } catch (Exception ex) {
+            throw  new AppException(ErrorCode.READ_FILE_ERROR);
+        }
         c.setName(newName);
         c.setType(req.getType());
-        c.setIconUrl(req.getIconUrl());
+        c.setIconUrl(icon);
         c.setColor(req.getColor());
 
 

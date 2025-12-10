@@ -14,7 +14,6 @@ public class CategoryRequest {
     @NotNull
     private TransactionType type; // EXPENSE hoặc INCOME
 
-    private String iconUrl;
     private String color;
 
 

@@ -1,5 +1,7 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
+import com.duybao.QUANLYCHITIEU.Exception.AppException;
+import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
 import com.duybao.QUANLYCHITIEU.Response.User.Request.UpdateUserRequest;
 import com.duybao.QUANLYCHITIEU.Response.User.UserDTO;
@@ -10,11 +12,14 @@ import com.duybao.QUANLYCHITIEU.Service.UserCategoryService;
 import com.duybao.QUANLYCHITIEU.Service.UserService;
 import com.duybao.QUANLYCHITIEU.Service.JwtService;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -67,13 +72,20 @@ public class UserController {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
     @PostMapping("/me/categories")
     public ApiResponse<CategoryResponse> createCategoryForMe(
-            @RequestBody CategoryRequest req,
-            @AuthenticationPrincipal CustomUserDetail userDetails) {
+                @RequestPart(name = "file", required = false)
+                        MultipartFile file,
+                @RequestPart(name = "data", required = false)String dataJson ,
 
-        Long userId = userDetails.getUser().getId(); // hoặc claim key khác
-        CategoryResponse res = userCategoryService.createAndAssignCategory(userId, req);
+            @AuthenticationPrincipal CustomUserDetail userDetails) throws JsonProcessingException {
+            if (dataJson == null || dataJson.isBlank()) {
+                throw new AppException(ErrorCode.INVALID_REQUEST);
+            }
+            CategoryRequest request = new ObjectMapper().readValue(dataJson, CategoryRequest.class);
+        Long userId = userDetails.getUser().getId();
+        CategoryResponse res = userCategoryService.createAndAssignCategory(userId, request,file);
         return ApiResponse.<CategoryResponse>builder()
                 .success(true)
                 .message("Tạo và gán danh mục thành công thành công")

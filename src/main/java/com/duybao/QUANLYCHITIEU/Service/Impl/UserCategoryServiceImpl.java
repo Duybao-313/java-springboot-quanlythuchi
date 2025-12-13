@@ -19,9 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +33,14 @@ public class UserCategoryServiceImpl implements UserCategoryService {
 
 
 
+    @Transactional
+    public List<CategoryResponse> getCategoriesBUser(Long userID){
+       List<Category> kq = categoryRepository.findByOwnerIdOrOwnerIsNull(userID);
+       List<CategoryResponse> kq1;
+       kq1=kq.stream().map(categoryMapper::toDTO).toList();
+        return kq1;
+
+    }
     @Transactional
     public CategoryResponse createAndAssignCategory(Long userId, CategoryRequest req, MultipartFile file) {
         String rawName = Optional.ofNullable(req.getName())
@@ -53,7 +61,7 @@ public class UserCategoryServiceImpl implements UserCategoryService {
         }
 User user=userRepository.findById(userId).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
         // 2. Tạo category mới với tên **nguyên gốc từ req** (không lưu normalized)
-        String icon=null;
+        String icon;
         try{
             icon=imageService.uploadImage(file,"QLCT-image");
         } catch (Exception ex) {

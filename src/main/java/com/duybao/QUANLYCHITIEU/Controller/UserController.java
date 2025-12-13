@@ -1,5 +1,6 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
+import com.cloudinary.Api;
 import com.duybao.QUANLYCHITIEU.Exception.AppException;
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
@@ -73,6 +74,31 @@ public class UserController {
                 .build();
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Category
+    @GetMapping("/me/categories")
+    public ApiResponse<List<CategoryResponse>>getCategories( @AuthenticationPrincipal CustomUserDetail userDetails){
+        List<CategoryResponse> res;
+        res=userCategoryService.getCategoriesBUser(userDetails.getUser().getId());
+        return ApiResponse.<List<CategoryResponse>>builder()
+                .success(true)
+                .message("Tạo và gán danh mục thành công thành công")
+                .data(res)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
     @PostMapping("/me/categories")
     public ApiResponse<CategoryResponse> createCategoryForMe(
                 @RequestPart(name = "file", required = false)

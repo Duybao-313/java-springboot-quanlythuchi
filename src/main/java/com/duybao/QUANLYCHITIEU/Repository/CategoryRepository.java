@@ -2,6 +2,7 @@ package com.duybao.QUANLYCHITIEU.Repository;
 
 import com.duybao.QUANLYCHITIEU.Model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,5 +13,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findByUsersId(Long userId);
   Optional<Category> findByNameIgnoreCase(String name);
     boolean existsByNameIgnoreCase(String name);
-
+    List<Category> findByOwnerIdOrOwnerIsNull(Long ownerId);
 }

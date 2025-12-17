@@ -4,8 +4,10 @@ import com.duybao.QUANLYCHITIEU.Exception.AppException;
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Mappers.CategoryMapper;
 import com.duybao.QUANLYCHITIEU.Model.Category;
+import com.duybao.QUANLYCHITIEU.Model.Transaction;
 import com.duybao.QUANLYCHITIEU.Model.User;
 import com.duybao.QUANLYCHITIEU.Repository.CategoryRepository;
+import com.duybao.QUANLYCHITIEU.Repository.TransactionRepository;
 import com.duybao.QUANLYCHITIEU.Repository.UserRepository;
 import com.duybao.QUANLYCHITIEU.Response.category.CategoryResponse;
 import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
@@ -29,6 +31,7 @@ public class UserCategoryServiceImpl implements UserCategoryService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private  final TransactionRepository transactionRepository;
     private final ImageService imageService;
 
 
@@ -68,7 +71,7 @@ User user=userRepository.findById(userId).orElseThrow(()->new AppException(Error
             throw  new AppException(ErrorCode.READ_FILE_ERROR);
         }
         Category category = Category.builder()
-                .name(rawName)      // lưu tên theo request, không lưu normalized
+                .name(rawName)
                 .type(type)
                 .iconUrl(icon)
                 .color(req.getColor())
@@ -135,10 +138,9 @@ User user=userRepository.findById(userId).orElseThrow(()->new AppException(Error
     public void removeCategoryFromUser(Long userId, Long categoryId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+       Category category =categoryRepository.findByOwnerIdAndId(userId,categoryId);
+       List<Transaction> kq =transactionRepository.deleteAllByCategoryId(categoryId);
 
-        boolean removed = user.getCategories().removeIf(c -> Objects.equals(c.getId(), categoryId));
-        if (removed) {
-            userRepository.save(user);
-        }
+            categoryRepository.delete(category);
     }
 }

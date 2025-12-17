@@ -1,5 +1,6 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
+import com.duybao.QUANLYCHITIEU.Enum.TransactionType;
 import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
 import com.duybao.QUANLYCHITIEU.Model.Transaction;
 import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
@@ -8,9 +9,11 @@ import com.duybao.QUANLYCHITIEU.Response.Transaction.TransactionResponse;
 import com.duybao.QUANLYCHITIEU.Service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,12 +35,19 @@ public class TransactionController {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
-
-    @GetMapping
-    public ApiResponse<List<TransactionResponse>> getTransactions(@AuthenticationPrincipal CustomUserDetail userDetails) {
+    @GetMapping("/user")
+    public ApiResponse<List<TransactionResponse>> getForUser(
+           @AuthenticationPrincipal CustomUserDetail userDetail,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long walletId,
+           @RequestParam(required = false) TransactionType type,
+           @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        var userId=userDetail.getUser().getId();
+        var list = transactionService.getTransactionsByUser(userId,type, startDate, endDate, categoryId, walletId);
         return ApiResponse.<List<TransactionResponse>>builder()
                 .message("Danh sách giao dịch")
-                .data(transactionService.getTransactionsByUser(userDetails.getUser().getId()))
+                .data(list)
                 .success(true)
                 .code("200")
                 .timestamp(LocalDateTime.now())

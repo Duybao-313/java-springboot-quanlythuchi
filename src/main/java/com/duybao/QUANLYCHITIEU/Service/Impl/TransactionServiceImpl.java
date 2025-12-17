@@ -19,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -71,8 +73,20 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
 
-    public List<TransactionResponse> getTransactionsByUser(Long userId) {
-        return transactionMapper.toDTOs(transactionRepository.findByUserId(userId));
+    public List<TransactionResponse> getTransactionsByUser(   Long userId,
+                                                              TransactionType type,
+                                                              LocalDate startDate,
+                                                              LocalDate endDate,
+                                                              Long categoryId,
+                                                              Long walletId) {
+
+        LocalDateTime start = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDateTime end = (endDate != null) ? endDate.atTime(LocalTime.MAX) : null;
+
+        var transactions = transactionRepository.findByUserAndOptionalFilters(
+                userId,type, categoryId, walletId, start, end);
+
+        return transactionMapper.toDTOs(transactions);
     }
 
     public TransactionResponse updateTransaction(Long userId, Long id, TransactionRequest request) {
@@ -104,3 +118,5 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.delete(transaction);
     }
 }
+
+

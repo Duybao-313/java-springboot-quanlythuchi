@@ -1,8 +1,5 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
-import com.cloudinary.Api;
-import com.duybao.QUANLYCHITIEU.Exception.AppException;
-import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
 import com.duybao.QUANLYCHITIEU.Response.User.Request.UpdateUserRequest;
 import com.duybao.QUANLYCHITIEU.Response.User.UserDTO;
@@ -13,12 +10,12 @@ import com.duybao.QUANLYCHITIEU.Service.UserCategoryService;
 import com.duybao.QUANLYCHITIEU.Service.UserService;
 import com.duybao.QUANLYCHITIEU.Service.JwtService;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
     private final UserService userService;
     private final JwtService jwtService;
@@ -73,20 +71,6 @@ public class UserController {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //Category
     @GetMapping("/me/categories")
     public ApiResponse<List<CategoryResponse>>getCategories( @AuthenticationPrincipal CustomUserDetail userDetails){
@@ -99,26 +83,23 @@ public class UserController {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
-    @PostMapping("/me/categories")
+    @PostMapping("/categories")
     public ApiResponse<CategoryResponse> createCategoryForMe(
-                @RequestPart(name = "file", required = false)
-                        MultipartFile file,
-                @RequestPart(name = "data", required = false)String dataJson ,
+            @RequestPart(name = "file", required = false) MultipartFile file,
+            @RequestPart(name = "data", required = true)  @Valid CategoryRequest request,
+            @AuthenticationPrincipal CustomUserDetail userDetails) {
 
-            @AuthenticationPrincipal CustomUserDetail userDetails) throws JsonProcessingException {
-            if (dataJson == null || dataJson.isBlank()) {
-                throw new AppException(ErrorCode.INVALID_REQUEST);
-            }
-            CategoryRequest request = new ObjectMapper().readValue(dataJson, CategoryRequest.class);
         Long userId = userDetails.getUser().getId();
-        CategoryResponse res = userCategoryService.createAndAssignCategory(userId, request,file);
+        CategoryResponse res = userCategoryService.createAndAssignCategory(userId, request, file);
+
         return ApiResponse.<CategoryResponse>builder()
                 .success(true)
-                .message("Tạo và gán danh mục thành công thành công")
+                .message("Tạo và gán danh mục thành công")
                 .data(res)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
     @PostMapping("/me/categories/{categoryId}")
     public ApiResponse<CategoryResponse> AssignCategoryForMe(
             @PathVariable Long categoryId,

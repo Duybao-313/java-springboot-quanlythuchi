@@ -3,12 +3,16 @@ package com.duybao.QUANLYCHITIEU.Response.category.Request;
 import com.duybao.QUANLYCHITIEU.Enum.TransactionType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
+
 import java.text.Normalizer;
 import java.util.regex.Pattern;
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CategoryRequest {
-    @NotBlank
+    @NotBlank(message = "Tên không được để trống")
     private String name;
 
     @NotNull

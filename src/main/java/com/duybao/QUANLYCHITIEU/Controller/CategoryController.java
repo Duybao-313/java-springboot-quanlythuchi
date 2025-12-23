@@ -25,16 +25,11 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
-
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<CategoryResponse> createCategory(
             @RequestPart(name = "file", required = false) MultipartFile file,
-            @RequestPart(name = "data", required = false) String dataJson) throws JsonProcessingException {
-
-        if (dataJson == null || dataJson.isBlank()) {
-            throw new AppException(ErrorCode.INVALID_REQUEST);
-        }
-        CategoryRequest request = new ObjectMapper().readValue(dataJson, CategoryRequest.class);
+            @RequestPart(name = "data") @Valid CategoryRequest request
+    ) {
         CategoryResponse category = categoryService.createCategory(request, file);
         return ApiResponse.<CategoryResponse>builder()
                 .code("200")

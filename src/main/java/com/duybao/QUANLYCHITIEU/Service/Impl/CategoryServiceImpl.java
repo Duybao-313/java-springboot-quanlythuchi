@@ -96,7 +96,6 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(Long id) {
         Category c = categoryRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-        // Nếu cần kiểm tra ràng buộc business (ví dụ đang dùng bởi user) thì kiểm tra ở đây
         categoryRepository.delete(c);
     }
 

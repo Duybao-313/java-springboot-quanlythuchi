@@ -46,10 +46,9 @@ public class UserCategoryServiceImpl implements UserCategoryService {
     }
     @Transactional
     public CategoryResponse createAndAssignCategory(Long userId, CategoryRequest req, MultipartFile file) {
+
         String rawName = Optional.ofNullable(req.getName())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_REQUEST));
-
-        // Normalize chỉ để tìm (không lưu)
         String normalized = req.normalizeName(rawName, true);
         System.out.println("Normalized name = " + normalized);
 
@@ -64,11 +63,13 @@ public class UserCategoryServiceImpl implements UserCategoryService {
         }
 User user=userRepository.findById(userId).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
         // 2. Tạo category mới với tên **nguyên gốc từ req** (không lưu normalized)
-        String icon;
+        String icon=null;
+        if(file!=null){
         try{
             icon=imageService.uploadImage(file,"QLCT-image");
         } catch (Exception ex) {
             throw  new AppException(ErrorCode.READ_FILE_ERROR);
+        }
         }
         Category category = Category.builder()
                 .name(rawName)
@@ -82,7 +83,6 @@ User user=userRepository.findById(userId).orElseThrow(()->new AppException(Error
             category = categoryRepository.save(category);
             categoryRepository.flush(); // ép lỗi unique nếu DB có constraint
         } catch (DataIntegrityViolationException | ConstraintViolationException ex) {
-            // Nếu DB ném duplicate (race) thì chuyển thành lỗi nghiệp vụ CATEGORY_EXIST
             throw new AppException(ErrorCode.CATEGORY_EXIST);
         }
 
@@ -139,8 +139,10 @@ User user=userRepository.findById(userId).orElseThrow(()->new AppException(Error
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
        Category category =categoryRepository.findByOwnerIdAndId(userId,categoryId);
-       List<Transaction> kq =transactionRepository.deleteAllByCategoryId(categoryId);
+        user.getCategories().removeIf(c -> Objects.equals(c.getId(), categoryId));
+        userRepository.save(user);
+        List<Transaction> kq =transactionRepository.deleteAllByCategoryId(categoryId);
 
-            categoryRepository.delete(category);
+            categoryRepository.deleteById(categoryId);
     }
 }

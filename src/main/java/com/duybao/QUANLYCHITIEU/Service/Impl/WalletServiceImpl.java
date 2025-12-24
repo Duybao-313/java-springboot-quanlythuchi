@@ -1,5 +1,6 @@
 package com.duybao.QUANLYCHITIEU.Service.Impl;
 
+import com.duybao.QUANLYCHITIEU.Enum.TransactionType;
 import com.duybao.QUANLYCHITIEU.Exception.AppException;
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Mappers.WalletMapper;
@@ -10,6 +11,7 @@ import com.duybao.QUANLYCHITIEU.Repository.TransactionRepository;
 import com.duybao.QUANLYCHITIEU.Repository.UserRepository;
 import com.duybao.QUANLYCHITIEU.Repository.WalletRepository;
 import com.duybao.QUANLYCHITIEU.Response.Wallet.Request.WalletRequest;
+import com.duybao.QUANLYCHITIEU.Response.Wallet.WalletOverview;
 import com.duybao.QUANLYCHITIEU.Response.Wallet.WalletResponse;
 import com.duybao.QUANLYCHITIEU.Service.ImageService;
 import com.duybao.QUANLYCHITIEU.Service.WalletService;
@@ -17,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -87,5 +91,25 @@ public class WalletServiceImpl implements WalletService {
         }
         walletRepository.delete(wallet);
     }
+    public WalletOverview WalletOverview(Long userId, LocalDateTime startDate, LocalDateTime endDate){
+System.out.println("heel"+startDate);
+            Long IncomeCount = transactionRepository.findByUserIdAndType(userId, TransactionType.INCOME).stream().count();
+            Long ExpenseCount = transactionRepository.findByUserIdAndType(userId, TransactionType.EXPENSE).stream().count();
+            BigDecimal totalIncome = transactionRepository.sumAmountByUserIdAndType(userId, TransactionType.INCOME,startDate,endDate);
+            BigDecimal totalExpense = transactionRepository.sumAmountByUserIdAndType(userId, TransactionType.EXPENSE,startDate,endDate);
+            BigDecimal netBalance = totalIncome.subtract(totalExpense);
+            BigDecimal total = walletRepository.SumBalanceByUserId(userId);
+
+        return WalletOverview.builder()
+                .walletCount(walletRepository.findAll().size())
+                .totalBalance(total)
+                .IncomeCount(IncomeCount)
+                .ExpenseCount(ExpenseCount)
+                .totalIncome(totalIncome)
+                .totalExpense(totalExpense)
+                .netBalance(netBalance)
+                .build();
+
+    };
 
 }

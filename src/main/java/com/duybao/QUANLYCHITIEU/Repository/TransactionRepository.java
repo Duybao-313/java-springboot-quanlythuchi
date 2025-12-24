@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,8 +16,22 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> findByUserId(Long userId);
     List<Transaction> deleteAllByCategoryId(Long categoryId);
+    List<Transaction> findByUserIdAndType(Long userId,TransactionType type);
     @Query("SELECT t FROM Transaction t WHERE t.user.id = :userId AND t.wallet.id = :walletId")
     List<Transaction> findByUserAndWallet(@Param("userId") Long userId, @Param("walletId") Long walletId);
+    @Query("""
+            SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t
+             WHERE
+                    t.user.id = :userId AND t.type = :type\s
+                    and (:start is null or t.date >= :start)
+                    and (:end is null or t.date <= :end)
+                  \s""")
+    BigDecimal sumAmountByUserIdAndType(@Param("userId") Long userId,
+                                        @Param("type") TransactionType type,
+                                        @Param("start") LocalDateTime start,
+                                        @Param("end") LocalDateTime end);
+
+
     @Query("""
         select t
         from Transaction t

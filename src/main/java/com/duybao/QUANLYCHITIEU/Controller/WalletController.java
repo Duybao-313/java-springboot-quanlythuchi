@@ -1,18 +1,19 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
 import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
-import com.duybao.QUANLYCHITIEU.Model.Wallet;
 import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
 import com.duybao.QUANLYCHITIEU.Response.Wallet.Request.WalletRequest;
+import com.duybao.QUANLYCHITIEU.Response.Wallet.WalletOverview;
 import com.duybao.QUANLYCHITIEU.Response.Wallet.WalletResponse;
-import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
 import com.duybao.QUANLYCHITIEU.Service.WalletService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import java.util.List;
 public class WalletController {
 
     private final WalletService walletService;
+
 
     @PostMapping
     public ApiResponse<WalletResponse> createWallet(  @RequestPart(name = "file", required = false) MultipartFile file,
@@ -69,6 +71,19 @@ public class WalletController {
                 .message("Xóa ví thành công")
                 .success(true)
                 .code("200")
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+    @GetMapping("/overview")
+    public ApiResponse<WalletOverview>overviewWallet(@AuthenticationPrincipal CustomUserDetail userDetail,
+                                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+                                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate){
+        WalletOverview data=walletService.WalletOverview(userDetail.getUser().getId(),startDate,endDate);
+        return ApiResponse.<WalletOverview>builder()
+                .message("Thống kê của ví")
+                .success(true)
+                .code("200")
+                .data(data)
                 .timestamp(LocalDateTime.now())
                 .build();
     }

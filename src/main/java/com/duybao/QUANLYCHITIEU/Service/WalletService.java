@@ -5,11 +5,12 @@ import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Model.Wallet;
 import com.duybao.QUANLYCHITIEU.Response.Wallet.Request.WalletRequest;
 import com.duybao.QUANLYCHITIEU.Response.Wallet.WalletResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface WalletService {
-    public WalletResponse createWallet(Long id, WalletRequest request);
+    public WalletResponse createWallet(Long id, WalletRequest request, MultipartFile file);
    public List<WalletResponse> getWalletsByUser(Long id);
     public WalletResponse updateWallet(Long userId, Long id, WalletRequest request) ;
 

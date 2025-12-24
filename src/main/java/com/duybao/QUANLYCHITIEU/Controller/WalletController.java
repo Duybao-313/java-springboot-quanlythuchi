@@ -5,11 +5,13 @@ import com.duybao.QUANLYCHITIEU.Model.Wallet;
 import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
 import com.duybao.QUANLYCHITIEU.Response.Wallet.Request.WalletRequest;
 import com.duybao.QUANLYCHITIEU.Response.Wallet.WalletResponse;
+import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
 import com.duybao.QUANLYCHITIEU.Service.WalletService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,9 +24,10 @@ public class WalletController {
     private final WalletService walletService;
 
     @PostMapping
-    public ApiResponse<WalletResponse> createWallet(@RequestBody @Valid WalletRequest request,
+    public ApiResponse<WalletResponse> createWallet(  @RequestPart(name = "file", required = false) MultipartFile file,
+                                                      @RequestPart(name = "data", required = true)  @Valid WalletRequest request,
                                                     @AuthenticationPrincipal CustomUserDetail userDetails) {
-        WalletResponse wallet = walletService.createWallet(userDetails.getUser().getId(), request);
+        WalletResponse wallet = walletService.createWallet(userDetails.getUser().getId(), request,file);
         return ApiResponse.<WalletResponse>builder()
                 .success(true)
                 .code("200")

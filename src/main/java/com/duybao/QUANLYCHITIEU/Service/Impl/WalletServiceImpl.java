@@ -11,9 +11,11 @@ import com.duybao.QUANLYCHITIEU.Repository.UserRepository;
 import com.duybao.QUANLYCHITIEU.Repository.WalletRepository;
 import com.duybao.QUANLYCHITIEU.Response.Wallet.Request.WalletRequest;
 import com.duybao.QUANLYCHITIEU.Response.Wallet.WalletResponse;
+import com.duybao.QUANLYCHITIEU.Service.ImageService;
 import com.duybao.QUANLYCHITIEU.Service.WalletService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,16 +27,25 @@ public class WalletServiceImpl implements WalletService {
     private final UserRepository userRepository;
     private final WalletMapper walletMapper;
     private  final TransactionRepository transactionRepository;
+    private final ImageService imageService;
 
-    public WalletResponse createWallet(Long userId, WalletRequest request) {
+    public WalletResponse createWallet(Long userId, WalletRequest request, MultipartFile file) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        String icon=null;
+        if(file!=null){
+            try{
+                icon=imageService.uploadImage(file,"QLCT-image");
+            } catch (Exception ex) {
+                throw  new AppException(ErrorCode.READ_FILE_ERROR);
+            }
+        }
 
         Wallet wallet = Wallet.builder()
                 .name(request.getName())
                 .balance(request.getBalance())
                 .type(request.getType())
-                .iconUrl(request.getIconUrl())
+                .iconUrl(icon)
                 .description(request.getDescription())
                 .createdAt(LocalDateTime.now())
                 .user(user)

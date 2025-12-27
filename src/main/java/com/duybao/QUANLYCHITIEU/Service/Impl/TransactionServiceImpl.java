@@ -52,15 +52,15 @@ public class TransactionServiceImpl implements TransactionService {
         BigDecimal amount  =request.getAmount();
 
 
-        if (request.getType() == TransactionType.EXPENSE) {
+        if (category.getType() == TransactionType.EXPENSE) {
 
             wallet.setBalance(balance.subtract(amount));
-        } else if (request.getType() == TransactionType.INCOME) {
+        } else if (category.getType() == TransactionType.INCOME) {
             wallet.setBalance(balance.add(amount));
         }
         Transaction transaction = Transaction.builder()
                 .amount(request.getAmount())
-                .type(request.getType())
+                .type(category.getType())
                 .description(request.getDescription())
                 .wallet(wallet)
                 .category(category)
@@ -99,7 +99,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         transaction.setAmount(request.getAmount());
         transaction.setDescription(request.getDescription());
-        transaction.setType(request.getType());
+//        transaction.setType(request.getType());
         transaction.setDate(LocalDateTime.now());
 
         Transaction updated = transactionRepository.save(transaction);

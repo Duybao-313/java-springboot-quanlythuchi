@@ -13,9 +13,6 @@ public class TransactionRequest {
     @NotNull(message = "Số tiền không được để trống")
     private BigDecimal amount;
 
-    @NotNull(message = "Loại giao dịch không được để trống")
-    private TransactionType type;
-
     private String description;
 
     @NotNull(message = "Ví không được để trống")

@@ -54,4 +54,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+//    @Query("Select count(t")
+//    int countTransactionByCategoryId(@Param("categoryId")Long categoryId);
 }

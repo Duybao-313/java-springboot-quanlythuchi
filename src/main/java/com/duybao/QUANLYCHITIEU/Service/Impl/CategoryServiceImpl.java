@@ -5,7 +5,7 @@ import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Mappers.CategoryMapper;
 import com.duybao.QUANLYCHITIEU.Model.Category;
 import com.duybao.QUANLYCHITIEU.Repository.CategoryRepository;
-import com.duybao.QUANLYCHITIEU.Repository.UserRepository;
+import com.duybao.QUANLYCHITIEU.Repository.TransactionRepository;
 import com.duybao.QUANLYCHITIEU.Response.category.CategoryResponse;
 import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
 import com.duybao.QUANLYCHITIEU.Service.CategoryService;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
+    private final TransactionRepository transactionRepository;
     private final CategoryMapper categoryMapper;
     private final ImageService imageService;
 

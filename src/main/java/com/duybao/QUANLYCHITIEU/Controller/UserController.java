@@ -60,9 +60,8 @@ public class UserController {
 
 
     @PutMapping("/updateinfo")
-    public ApiResponse<UserDTO> updateUser(@RequestHeader("Authorization") String tokenjwt, @RequestBody UpdateUserRequest userRequest) {
-        String token = tokenjwt.substring(7).trim();
-        Long userId = jwtService.extractUserId(token);
+    public ApiResponse<UserDTO> updateUser(@AuthenticationPrincipal CustomUserDetail userDetail, @RequestBody @Valid UpdateUserRequest userRequest) {
+        Long userId = userDetail.getUser().getId();;
         UserDTO kq= userService.updateUser(userId, userRequest);
         return ApiResponse.<UserDTO>builder()
                 .success(true)

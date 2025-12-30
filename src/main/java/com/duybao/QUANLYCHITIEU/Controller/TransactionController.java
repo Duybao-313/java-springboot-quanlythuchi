@@ -2,7 +2,6 @@ package com.duybao.QUANLYCHITIEU.Controller;
 
 import com.duybao.QUANLYCHITIEU.Enum.TransactionType;
 import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
-import com.duybao.QUANLYCHITIEU.Model.Transaction;
 import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
 import com.duybao.QUANLYCHITIEU.Response.Transaction.Request.TransactionRequest;
 import com.duybao.QUANLYCHITIEU.Response.Transaction.TransactionResponse;
@@ -53,6 +52,7 @@ public class TransactionController {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
     @PutMapping("/{id}")
     public ApiResponse<TransactionResponse> updateTransaction(@PathVariable Long id,
                                                               @RequestBody TransactionRequest request,

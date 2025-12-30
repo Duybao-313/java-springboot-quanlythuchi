@@ -2,7 +2,6 @@ package com.duybao.QUANLYCHITIEU.Controller;
 
 import com.duybao.QUANLYCHITIEU.Exception.AppException;
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
-import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
 import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
 import com.duybao.QUANLYCHITIEU.Response.category.CategoryResponse;
 import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
@@ -12,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +39,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ApiResponse<List<CategoryResponse>> getCategories(@AuthenticationPrincipal CustomUserDetail userDetails){
+    public ApiResponse<List<CategoryResponse>> getCategories(){
         List<CategoryResponse> categories = categoryService.listAll();
         return ApiResponse.<List<CategoryResponse>>builder()
                 .message("Lấy thành công danh sách danh mục")

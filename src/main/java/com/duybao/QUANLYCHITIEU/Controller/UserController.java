@@ -45,12 +45,9 @@ public class UserController {
     }
 
     @GetMapping("/info")
-    public ApiResponse<UserDTO> getCurrentUser(@RequestHeader("Authorization") String tokenjwt) {
-        String token = tokenjwt.substring(7).trim();
-        Long userId = jwtService.extractUserId(token);
-
+    public ApiResponse<UserDTO> getCurrentUser(@AuthenticationPrincipal CustomUserDetail customUserDetail) {
         return ApiResponse.<UserDTO>builder()
-                .data(userService.getUser(userId))
+                .data(userService.getUser(customUserDetail.getUser().getId()))
                 .success(true)
                 .message("Lấy thông tin người dùng")
 

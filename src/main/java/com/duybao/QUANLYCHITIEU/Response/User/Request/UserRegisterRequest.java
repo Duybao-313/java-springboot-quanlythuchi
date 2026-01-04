@@ -1,16 +1,23 @@
 package com.duybao.QUANLYCHITIEU.Response.User.Request;
 
-import jakarta.validation.constraints.NotBlank;
+import com.duybao.QUANLYCHITIEU.Validator.PassWordMin;
+import com.duybao.QUANLYCHITIEU.Validator.UniqueUserName;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
 public class UserRegisterRequest {
-    @NotBlank(message = "Tài khoản Không được để trống")
+    @NotBlank(message = "USERNAME_NOT_NULL")
+    @Size(min = 3,max = 30,message = "USERNAME_TOO_SHORT")
+    @Pattern(regexp = "^[\\p{Alnum}_\\-\\s.]+$", message = "USERNAME_INVALID_CHARS")
+    @UniqueUserName()
     private String username;
-    @NotBlank(message = "Họ tên không được để trống")
+    @NotBlank(message = "NAME_NOT_NULL")
     private String fullName;
-    @NotBlank(message = "Mật khẩu không được để trống")
+    @NotBlank(message = "PASSWORD_NOT_NULL")
+    @PassWordMin(min = 6)
     private String password;
-    @NotBlank(message = "Email không được để trống")
+    @NotBlank(message = "EMAIL_NOT_NULL")
+    @Email(message = "EMAIL_INVALID")
     private  String email;
 }

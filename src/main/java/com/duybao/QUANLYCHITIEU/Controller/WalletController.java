@@ -32,7 +32,7 @@ public class WalletController {
         WalletResponse wallet = walletService.createWallet(userDetails.getUser().getId(), request,file);
         return ApiResponse.<WalletResponse>builder()
                 .success(true)
-                .code("200")
+                .code(200)
                 .message("Tạo ví thành công")
                 .data(wallet)
                 .timestamp(LocalDateTime.now())
@@ -44,7 +44,7 @@ public class WalletController {
         List<WalletResponse> wallets = walletService.getWalletsByUser(userDetails.getUser().getId());
         return ApiResponse.<List<WalletResponse>>builder()
                 .success(true)
-                .code("200")
+                .code(200)
                 .message("Danh sách ví")
                 .data(wallets)
                 .timestamp(LocalDateTime.now())
@@ -58,7 +58,7 @@ public class WalletController {
                 .message("Cập nhật ví thành công")
                 .data(walletService.updateWallet(userDetails.getUser().getId(), id, request))
                 .success(true)
-                .code("200")
+                .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -70,7 +70,7 @@ public class WalletController {
         return ApiResponse.<Void>builder()
                 .message("Xóa ví thành công")
                 .success(true)
-                .code("200")
+                .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -82,7 +82,7 @@ public class WalletController {
         return ApiResponse.<WalletOverview>builder()
                 .message("Thống kê của ví")
                 .success(true)
-                .code("200")
+                .code(200)
                 .data(data)
                 .timestamp(LocalDateTime.now())
                 .build();

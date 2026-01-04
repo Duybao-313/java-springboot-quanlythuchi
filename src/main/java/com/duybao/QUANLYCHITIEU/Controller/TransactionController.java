@@ -30,7 +30,7 @@ public class TransactionController {
                 .message("Tạo thành công giao dịch")
                 .data(transactionService.createTransaction(userDetails.getUser().getId(),request))
                 .success(true)
-                .code("200")
+                .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -48,7 +48,7 @@ public class TransactionController {
                 .message("Danh sách giao dịch")
                 .data(list)
                 .success(true)
-                .code("200")
+                .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -61,7 +61,7 @@ public class TransactionController {
                 .message("Cập nhật giao dịch thành công")
                 .data(transactionService.updateTransaction(userDetails.getUser().getId(), id, request))
                 .success(true)
-                .code("200")
+                .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -73,7 +73,7 @@ public class TransactionController {
         return ApiResponse.<Void>builder()
                 .message("Xóa giao dịch thành công")
                 .success(true)
-                .code("200")
+                .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
     }

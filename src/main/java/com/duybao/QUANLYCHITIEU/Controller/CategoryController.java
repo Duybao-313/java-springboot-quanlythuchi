@@ -30,7 +30,7 @@ public class CategoryController {
     ) {
         CategoryResponse category = categoryService.createCategory(request, file);
         return ApiResponse.<CategoryResponse>builder()
-                .code("200")
+                .code(200)
                 .message("Tạo thành công danh mục")
                 .success(true)
                 .timestamp(LocalDateTime.now())
@@ -60,7 +60,7 @@ public class CategoryController {
                 .message("Cập nhật danh mục thành công")
                 .data(categoryService.updateCategory(id, request,file))
                 .success(true)
-                .code("200")
+                .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -71,7 +71,7 @@ public class CategoryController {
         return ApiResponse.<Void>builder()
                 .message("Xóa danh mục thành công")
                 .success(true)
-                .code("200")
+                .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
     }

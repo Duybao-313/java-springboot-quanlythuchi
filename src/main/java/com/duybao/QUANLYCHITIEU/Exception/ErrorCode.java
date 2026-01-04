@@ -1,39 +1,59 @@
 package com.duybao.QUANLYCHITIEU.Exception;
 
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+@Getter
 public enum ErrorCode {
 
-    USER_NOT_FOUND("Người dùng không tồn tại"),
-    ROLE_NOT_FOUND("ROLE không tồn tại"),
-    USERNAME_ALREADY_EXISTS("Username đã tồn tại"),
-    EMAIL_ALREADY_EXISTS("Email đã được sử dụng"),
-    WALLET_NOT_FOUND("Không tìm thấy ví"),
-    CATEGORY_NOT_FOUND("Không tìm thấy danh mục"),
-    WALLET_NOT_ENOUGH("Số dư không đủ"),
-    USER_NOT_AUTHORIZED("không có quyền"),
-    BUDGET_NOT_FOUND("Không tìm thấy budget"),
-    TRANSACTION_NOT_FOUND("Không tìm thấy giao dịch"),
-    PASSWORD_INCORECT("Mật khẩu không đúng"),
-    TOKEN_EXPIRED("token hết hạn"),
-    TOKEN_INVALID("token không hợp lệ"),
-    INTERNAL_ERROR("lỗi jwt"),
-    CATEGORY_EXIST("Danh mục đã tồn tại"),
-    CATEGORY_ALREADY_ASSIGNED("Đã gán danh mục này"),
-    AMOUNT_NOT_NEGATIVE("Số tiền không phải số âm"),
-    READ_FILE_ERROR("Lỗi khi đọc file"),
+    USER_NOT_FOUND(1000,"Người dùng không tồn tại", HttpStatus.NOT_FOUND),
+    ROLE_NOT_FOUND(1001,"ROLE không tồn tại", HttpStatus.NOT_FOUND),
+    USERNAME_ALREADY_EXISTS(1002,"Tài khoản đã tồn tại", HttpStatus.BAD_REQUEST),
+    EMAIL_ALREADY_EXISTS(1003,"Email đã được sử dụng", HttpStatus.BAD_REQUEST),
+    WALLET_NOT_FOUND(1004,"Không tìm thấy ví", HttpStatus.NOT_FOUND),
+    CATEGORY_NOT_FOUND(1005,"Không tìm thấy danh mục", HttpStatus.NOT_FOUND),
+    WALLET_NOT_ENOUGH(1006,"Số dư không đủ", HttpStatus.BAD_REQUEST),
+    USER_NOT_AUTHORIZED(1007,"Không có quyền", HttpStatus.FORBIDDEN),
+    BUDGET_NOT_FOUND(1008,"Không tìm thấy budget", HttpStatus.NOT_FOUND),
+    TRANSACTION_NOT_FOUND(1009,"Không tìm thấy giao dịch", HttpStatus.NOT_FOUND),
+    PASSWORD_INCORRECT(1010,"Mật khẩu không đúng", HttpStatus.UNAUTHORIZED),
+    TOKEN_EXPIRED(1011,"Token hết hạn", HttpStatus.UNAUTHORIZED),
+    TOKEN_INVALID(1012,"Token không hợp lệ", HttpStatus.UNAUTHORIZED),
+    INTERNAL_ERROR(1013,"Lỗi nội bộ", HttpStatus.INTERNAL_SERVER_ERROR),
+    CATEGORY_EXIST(1014,"Danh mục đã tồn tại", HttpStatus.BAD_REQUEST),
+    CATEGORY_ALREADY_ASSIGNED(1015,"Đã gán danh mục này", HttpStatus.CONFLICT),
+    AMOUNT_NOT_NEGATIVE(1016,"Số tiền không được âm", HttpStatus.BAD_REQUEST),
+    READ_FILE_ERROR(1017,"Lỗi khi đọc file", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_REQUEST(1018,"Yêu cầu không hợp lệ",HttpStatus.BAD_REQUEST),
+    USERNAME_NOT_NULL(1019,"Tài khoản không được để trống",HttpStatus.BAD_REQUEST),
+    USERNAME_TOO_SHORT(1020,"Tài khoản PHẢI NHIỀU HƠN 3 KÝ TỰ",HttpStatus.BAD_REQUEST),
+    NAME_NOT_NULL(1021,"HỌ TÊN KHÔNG ĐƯỢC ĐỂ TRỐNG",HttpStatus.BAD_REQUEST),
+    PASSWORD_NOT_NULL(1022,"Mật khẩu không đưuọc để trống",HttpStatus.BAD_REQUEST),
+    PASSWORD_TOO_SHORT(1023,"Mật khẩu phải trên 6 ký tự",HttpStatus.BAD_REQUEST),
+    EMAIL_INVALID(1024,"Email không hợp lệ",HttpStatus.BAD_REQUEST),
+    INVALID_USERNAME(1024,"Tài khoản không hợp lệ",HttpStatus.BAD_REQUEST)
 
 
-    INVALID_REQUEST("Yêu cầu không hợp lệ");
 
 
 
 
+
+
+    ;
+
+
+
+
+    private final int code;
     private final String message;
+    private final HttpStatusCode httpStatusCode;
 
-    ErrorCode(String message) {
+    ErrorCode(int code,String message,HttpStatusCode httpStatusCode) {
+        this.code = code;
+
         this.message = message;
+        this.httpStatusCode=httpStatusCode;
     }
 
-    public String getMessage() {
-        return message;
-    }
 }

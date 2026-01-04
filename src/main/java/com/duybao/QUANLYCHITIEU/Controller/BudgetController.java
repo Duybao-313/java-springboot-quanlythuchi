@@ -25,7 +25,7 @@ public class BudgetController {
                 .message("Tạo ngân sách thành công")
                 .data(budgetService.createBudget(userDetails.getUser().getId(), request))
                 .success(true)
-                .code("200")
+                .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -36,7 +36,7 @@ public class BudgetController {
                 .message("Danh sách ngân sách")
                 .data(budgetService.getBudgets(userDetails.getUser().getId()))
                 .success(true)
-                .code("200")
+                .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -49,7 +49,7 @@ public class BudgetController {
                 .message("Cập nhật ngân sách thành công")
                 .data(budgetService.updateBudget(userDetails.getUser().getId(), id, request))
                 .success(true)
-                .code("200")
+                .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -61,7 +61,7 @@ public class BudgetController {
         return ApiResponse.<Void>builder()
                 .message("Xóa ngân sách thành công")
                 .success(true)
-                .code("200")
+                .code(200)
                 .timestamp(LocalDateTime.now())
                 .build();
     }

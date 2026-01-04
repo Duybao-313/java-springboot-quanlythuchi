@@ -25,6 +25,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,9 +46,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public RegisterResponse UserRegister(UserRegisterRequest a) {
-        if (userRepository.findByUsername(a.getUsername()).isPresent()) {
-            throw new AppException(ErrorCode.USERNAME_ALREADY_EXISTS);
-        }
+
         if (userRepository.findByEmail(a.getEmail()).isPresent()) {
             throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
@@ -60,7 +59,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setUpdatedAt(LocalDateTime.now());
         user.setStatus(UserStatus.ACTIVE);
         userRepository.save(user);
-        return new RegisterResponse().builder()
+        return  RegisterResponse.builder()
                         .id(user.getId())
                         .username(user.getUsername())
                         .email(user.getEmail())
@@ -74,45 +73,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthResponse login(UserLoginRequest a) {
         try {
-            org.springframework.security.core.Authentication authentication = authenticationManager.authenticate(
+       Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(a.getUsername(), a.getPassword())
             );
 
             CustomUserDetail userDetail = (CustomUserDetail) authentication.getPrincipal();
-            User User = userDetail.getUser();
-            String token = jwtService.generateToken(User.getUsername(), User.getRole().getName(), User.getId());
-            UserDTO userDTO = userMapper.toDTO(User); //
-            String role = User.getRole().getName();
+            User user = userDetail.getUser();
+            String token = jwtService.generateToken(user);
+            UserDTO userDTO = userMapper.toDTO(user); //
+            String role = user.getRole().getName();
             return new AuthResponse(token, role, userDTO);
         }
 catch (BadCredentialsException e) {
-            // Sai mật khẩu
-            throw new AppException(ErrorCode.PASSWORD_INCORECT);
+            throw new AppException(ErrorCode.PASSWORD_INCORRECT);
         }
     }
 
     @Override
     public String jwtcode(UserLoginRequest a) {
         try {
-            org.springframework.security.core.Authentication authentication = authenticationManager.authenticate(
+           Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(a.getUsername(), a.getPassword())
             );
             CustomUserDetail customUserDetail = (CustomUserDetail) authentication.getPrincipal();
 
-            String token = jwtService.generateToken(customUserDetail.getUsername(), customUserDetail.getUser().getRole().getName(), customUserDetail.getUser().getId());
+            User user =customUserDetail.getUser();
+            String token = jwtService.generateToken(user);
 
             System.out.println("Token: " + token);
             return token;
         } catch (Exception e) {
-            System.out.println("❌ Lỗi xác thực: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+            System.out.println(" Lỗi xác thực: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             throw e;
         }
     }
     @Override
     public UserDTO getUser(Long id) {
         User user= userRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
-        UserDTO userDTO=userMapper.toDTO(user);
-        return userDTO;
+        return userMapper.toDTO(user);
     }
 
 

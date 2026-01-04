@@ -1,5 +1,6 @@
 package com.duybao.QUANLYCHITIEU.Service;
 
+import com.duybao.QUANLYCHITIEU.Model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,17 +16,17 @@ public class JwtService {
 
     private static final String SECRET_KEY = "c1f3323703ce25adb858db45bf4b06aaa8555bdfb65a4edee2c0b990d0de7a8c";
 
-    private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1h
+    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 1h
 
     private Key getSignKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String generateToken(String username, String role, Long id) {
+    public String generateToken(User user) {
         return Jwts.builder()
-                .setSubject(username)
-                .claim("role", role)
-                .claim("userid", id)
+                .setSubject(user.getUsername())
+                .claim("role", user.getRole().getName())
+                .claim("userid", user.getId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)

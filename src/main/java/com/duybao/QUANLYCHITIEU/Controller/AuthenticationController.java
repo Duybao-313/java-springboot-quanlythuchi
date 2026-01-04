@@ -30,7 +30,7 @@ public class AuthenticationController {
         return ApiResponse.<RegisterResponse>builder()
                 .success(true)
                 .message("Đăng ký thành công")
-                .code("200")
+                .code(200)
                 .data(authenticationService.UserRegister(a))
                 .build();
 
@@ -40,7 +40,7 @@ public class AuthenticationController {
     public ApiResponse<AuthResponse>userinfo(@Valid @RequestBody UserLoginRequest a){
                 return ApiResponse.<AuthResponse>builder()
                         .success(true)
-                .code("200")
+                .code(200)
                 .message("Đăng nhập thành công")
                 .data(authenticationService.login(a))
                 .build();

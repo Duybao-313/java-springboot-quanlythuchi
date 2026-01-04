@@ -1,53 +1,76 @@
 package com.duybao.QUANLYCHITIEU.Exception;
 
 import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Object>> handleValidation(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult().getFieldErrors().stream()
-                .map(err ->err.getDefaultMessage())
-                .collect(Collectors.joining(", "));
-
-        ApiResponse<Object> response = ApiResponse.builder()
-                .success(false)
-                .code("VALIDATION_ERROR")
-                .message(message)
-                .data(null)
-                .timestamp(LocalDateTime.now())
-                .build();
-
-        return ResponseEntity.badRequest().body(response);
-    }
-    @ExceptionHandler(AppException .class)
+    @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<Object>> handleBaseException(AppException ex) {
         ApiResponse<Object> response = ApiResponse.builder()
-                .code(ex.getErrorCode().name())
+                .code(ex.getErrorCode().getCode())
                 .message(ex.getErrorCode().getMessage())
                 .data(null)
                 .timestamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity.status(ex.getErrorCode().getHttpStatusCode()).body(response);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Object>> handleOtherExceptions(Exception ex) {
+    @ExceptionHandler(org.springframework.security.authorization.AuthorizationDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccessDeniedExceptions(AuthorizationDeniedException ex) {
+        ErrorCode errorCode = ErrorCode.USER_NOT_AUTHORIZED;
         ApiResponse<Object> response = ApiResponse.builder()
-                .code("Loi")
-                .message(ex.getMessage())
-                .data(null)
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+
+        // Lấy lỗi đầu tiên làm ví dụ; có thể trả tất cả nếu muốn
+//        String codeKey = fieldErrors.isEmpty() ? "VALIDATION_ERROR" : fieldErrors.get(0).getDefaultMessage();
+        List<String> codeKey = fieldErrors.stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toList();
+
+
+        List<ErrorCode> errorCode = codeKey.stream().map(this::mapToErrorCode).toList();
+        List<String> errM=errorCode.stream().map(ErrorCode::getMessage).toList();
+        List<Integer> errC=errorCode.stream().map(ErrorCode::getCode).toList();
+        String errM2= String.join(",",errM);
+//        Integer errC2= String.join(",",errC);
+        ApiResponse<Object> body = ApiResponse.<Object>builder()
+                .success(false)
+                .message(errM2)
+                .timestamp(java.time.LocalDateTime.now())
+                .build();
+
+//        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(body);
+        return ResponseEntity.badRequest().body(body);
+
+    }
+
+    private ErrorCode mapToErrorCode(String codeKey) {
+        if (codeKey == null) return ErrorCode.INTERNAL_ERROR;
+        try {
+            // Nếu defaultMessage chính là tên enum, dùng valueOf
+            return ErrorCode.valueOf(codeKey);
+        } catch (IllegalArgumentException e) {
+            return ErrorCode.INVALID_REQUEST;
+        }
     }
 }

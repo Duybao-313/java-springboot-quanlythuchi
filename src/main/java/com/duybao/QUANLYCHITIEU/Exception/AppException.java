@@ -1,6 +1,7 @@
 package com.duybao.QUANLYCHITIEU.Exception;
 
 
+
 public class AppException extends RuntimeException{
     private final ErrorCode errorCode;
     public AppException(ErrorCode errorCode){

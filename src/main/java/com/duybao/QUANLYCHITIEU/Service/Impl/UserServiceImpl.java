@@ -10,6 +10,9 @@ import com.duybao.QUANLYCHITIEU.Model.User;
 import com.duybao.QUANLYCHITIEU.Repository.UserRepository;
 import com.duybao.QUANLYCHITIEU.Service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +23,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final SecurityConfig securityConfig;
-
+@PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<UserDTO> getAllUser() {
         List<UserDTO> users = userMapper.toDTOs(userRepository.findAll());
@@ -29,9 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUser(Long id) {
-        User usera = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        UserDTO user = userMapper.toDTO(usera);
-        return user;
+        var context= SecurityContextHolder.getContext().getAuthentication().getName();
+        User usera=userRepository.findByUsername(context).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
+        return userMapper.toDTO(usera);
     }
 
     @Override

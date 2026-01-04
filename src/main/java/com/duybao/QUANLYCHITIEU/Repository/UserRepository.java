@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String Username);
+    Optional<User> findByUsernameIgnoreCase(String username);
     Optional<User> findByEmail(String Email);
     // CategoryRepository
 //    Optional<Category> findByNameIgnoreCase(String name);

@@ -1,7 +1,9 @@
 package com.duybao.QUANLYCHITIEU.Config;
 
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -26,24 +29,25 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
+@EnableMethodSecurity
 public class SecurityConfig {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+      JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, UserDetailsService UserDetailsService) throws Exception {
         http
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register"
-                        ).permitAll().requestMatchers("/").authenticated().requestMatchers("/api/users/**", "/admin/**",
-                                "/dashboard/**").hasRole("ADMIN")
-                        .anyRequest().permitAll()
+                        .requestMatchers("/auth/login", "/auth/register","/auth/code").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .csrf(csrf -> csrf.disable()) // ✅ Cách mới để disable CSRF
                 .authenticationProvider(authenticationProvider(UserDetailsService))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex->ex.authenticationEntryPoint(new JwtAuthenticatedEntryPoint()))
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessHandler((req, res, auth) -> res.setStatus(200))

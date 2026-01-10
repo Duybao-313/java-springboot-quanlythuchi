@@ -1,4 +1,4 @@
-package com.duybao.QUANLYCHITIEU.Response.Transaction;
+package com.duybao.QUANLYCHITIEU.DTO.Response.Transaction;
 
 import com.duybao.QUANLYCHITIEU.Enum.TransactionType;
 import com.fasterxml.jackson.annotation.JsonFormat;

@@ -1,20 +1,23 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
-import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
-import com.duybao.QUANLYCHITIEU.Response.User.Request.UpdateUserRequest;
-import com.duybao.QUANLYCHITIEU.Response.User.UserDTO;
-import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
-import com.duybao.QUANLYCHITIEU.Response.category.CategoryResponse;
-import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
+import com.duybao.QUANLYCHITIEU.Model.User;
+import com.duybao.QUANLYCHITIEU.DTO.request.UpdateUserRequest;
+import com.duybao.QUANLYCHITIEU.DTO.Response.User.UserDTO;
+import com.duybao.QUANLYCHITIEU.DTO.Response.ApiResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.category.CategoryResponse;
+import com.duybao.QUANLYCHITIEU.DTO.request.CategoryRequest;
 import com.duybao.QUANLYCHITIEU.Service.UserCategoryService;
 import com.duybao.QUANLYCHITIEU.Service.UserService;
 import com.duybao.QUANLYCHITIEU.Service.JwtService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +29,7 @@ import java.util.List;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class UserController {
     private final UserService userService;
     private final JwtService jwtService;
@@ -44,10 +48,24 @@ public class UserController {
                 .build();
     }
 
+        @PostMapping(path = "/upload-avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public  ApiResponse<?>uploadAVT(@AuthenticationPrincipal User user,
+                                    @RequestPart(name = "file", required = false) MultipartFile file){
+        userService.setAvatar(file,user.getId());
+        return ApiResponse.builder()
+                .success(true)
+                .message("tai anh thanh cong")
+                .build();
+
+        }
+
     @GetMapping("/info")
-    public ApiResponse<UserDTO> getCurrentUser(@AuthenticationPrincipal CustomUserDetail customUserDetail) {
+    public ApiResponse<UserDTO> getCurrentUser(@AuthenticationPrincipal User user) {
+        var a  = SecurityContextHolder.getContext().getAuthentication();
+        log.info("name"+a.getPrincipal());
+
         return ApiResponse.<UserDTO>builder()
-                .data(userService.getUser(customUserDetail.getUser().getId()))
+                .data(userService.getUser( user.getId()))
                 .success(true)
                 .message("Lấy thông tin người dùng")
 
@@ -57,8 +75,8 @@ public class UserController {
 
 
     @PutMapping("/updateinfo")
-    public ApiResponse<UserDTO> updateUser(@AuthenticationPrincipal CustomUserDetail userDetail, @RequestBody @Valid UpdateUserRequest userRequest) {
-        Long userId = userDetail.getUser().getId();;
+    public ApiResponse<UserDTO> updateUser(@AuthenticationPrincipal User userDetail, @RequestBody @Valid UpdateUserRequest userRequest) {
+        Long userId = userDetail.getId();;
         UserDTO kq= userService.updateUser(userId, userRequest);
         return ApiResponse.<UserDTO>builder()
                 .success(true)
@@ -68,10 +86,10 @@ public class UserController {
                 .build();
     }
 //Category
-    @GetMapping("/me/categories")
-    public ApiResponse<List<CategoryResponse>>getCategories( @AuthenticationPrincipal CustomUserDetail userDetails){
+    @GetMapping("/categories")
+    public ApiResponse<List<CategoryResponse>>getCategories( @AuthenticationPrincipal User userDetails){
         List<CategoryResponse> res;
-        res=userCategoryService.getCategoriesBUser(userDetails.getUser().getId());
+        res=userCategoryService.getCategoriesBUser(userDetails.getId());
         return ApiResponse.<List<CategoryResponse>>builder()
                 .success(true)
                 .message("Tạo và gán danh mục thành công thành công")
@@ -83,9 +101,9 @@ public class UserController {
     public ApiResponse<CategoryResponse> createCategoryForMe(
             @RequestPart(name = "file", required = false) MultipartFile file,
             @RequestPart(name = "data", required = true)  @Valid CategoryRequest request,
-            @AuthenticationPrincipal CustomUserDetail userDetails) {
+            @AuthenticationPrincipal User userDetails) {
 
-        Long userId = userDetails.getUser().getId();
+        Long userId = userDetails.getId();
         CategoryResponse res = userCategoryService.createAndAssignCategory(userId, request, file);
 
         return ApiResponse.<CategoryResponse>builder()
@@ -96,12 +114,12 @@ public class UserController {
                 .build();
     }
 
-    @PostMapping("/me/categories/{categoryId}")
+    @PostMapping("/categories/{categoryId}")
     public ApiResponse<CategoryResponse> AssignCategoryForMe(
             @PathVariable Long categoryId,
-            @AuthenticationPrincipal CustomUserDetail userDetails) {
+            @AuthenticationPrincipal User userDetails) {
 
-        Long userId = userDetails.getUser().getId();
+        Long userId = userDetails.getId();
         CategoryResponse res = userCategoryService.assignExistingCategory(userId, categoryId);
         return ApiResponse.<CategoryResponse>builder()
                 .success(true)
@@ -111,12 +129,12 @@ public class UserController {
                 .build();
     }
 
-    @DeleteMapping("/me/categories/{categoryId}")
+    @DeleteMapping("/categories/{categoryId}")
     public ApiResponse<Void> removeCategoryForMe(
             @PathVariable Long categoryId,
-            @AuthenticationPrincipal  CustomUserDetail userDetails) {
+            @AuthenticationPrincipal User userDetails) {
 
-        Long userId = userDetails.getUser().getId();
+        Long userId = userDetails.getId();
         userCategoryService.removeCategoryFromUser(userId, categoryId);
         return ApiResponse.<Void>builder()
                 .success(true)

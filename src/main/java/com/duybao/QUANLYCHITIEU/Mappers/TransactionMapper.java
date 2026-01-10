@@ -1,7 +1,7 @@
 package com.duybao.QUANLYCHITIEU.Mappers;
 
 import com.duybao.QUANLYCHITIEU.Model.Transaction;
-import com.duybao.QUANLYCHITIEU.Response.Transaction.TransactionResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.Transaction.TransactionResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

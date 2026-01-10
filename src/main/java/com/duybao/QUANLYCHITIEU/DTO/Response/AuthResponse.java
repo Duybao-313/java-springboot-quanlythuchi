@@ -1,6 +1,6 @@
-package com.duybao.QUANLYCHITIEU.Response;
+package com.duybao.QUANLYCHITIEU.DTO.Response;
 
-import com.duybao.QUANLYCHITIEU.Response.User.UserDTO;
+import com.duybao.QUANLYCHITIEU.DTO.Response.User.UserDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

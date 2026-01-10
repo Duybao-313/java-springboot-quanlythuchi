@@ -1,7 +1,7 @@
 package com.duybao.QUANLYCHITIEU.Service;
 
-import com.duybao.QUANLYCHITIEU.Response.category.CategoryResponse;
-import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
+import com.duybao.QUANLYCHITIEU.DTO.Response.category.CategoryResponse;
+import com.duybao.QUANLYCHITIEU.DTO.request.CategoryRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.duybao.QUANLYCHITIEU.Response.category.Request;
+package com.duybao.QUANLYCHITIEU.DTO.request;
 
 import com.duybao.QUANLYCHITIEU.Enum.TransactionType;
 import jakarta.validation.constraints.NotBlank;

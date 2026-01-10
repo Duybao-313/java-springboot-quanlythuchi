@@ -1,4 +1,4 @@
-package com.duybao.QUANLYCHITIEU.Response;
+package com.duybao.QUANLYCHITIEU.DTO.Response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;

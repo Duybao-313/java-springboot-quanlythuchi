@@ -9,8 +9,8 @@ import com.duybao.QUANLYCHITIEU.Model.User;
 import com.duybao.QUANLYCHITIEU.Repository.CategoryRepository;
 import com.duybao.QUANLYCHITIEU.Repository.TransactionRepository;
 import com.duybao.QUANLYCHITIEU.Repository.UserRepository;
-import com.duybao.QUANLYCHITIEU.Response.category.CategoryResponse;
-import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
+import com.duybao.QUANLYCHITIEU.DTO.Response.category.CategoryResponse;
+import com.duybao.QUANLYCHITIEU.DTO.request.CategoryRequest;
 import com.duybao.QUANLYCHITIEU.Service.ImageService;
 import com.duybao.QUANLYCHITIEU.Service.UserCategoryService;
 

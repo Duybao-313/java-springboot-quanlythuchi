@@ -3,8 +3,8 @@ package com.duybao.QUANLYCHITIEU.Mappers;
 import com.duybao.QUANLYCHITIEU.Model.Budget;
 import com.duybao.QUANLYCHITIEU.Model.Category;
 import com.duybao.QUANLYCHITIEU.Model.User;
-import com.duybao.QUANLYCHITIEU.Response.budget.BudgetResponse;
-import com.duybao.QUANLYCHITIEU.Response.budget.request.BudgetRequest;
+import com.duybao.QUANLYCHITIEU.DTO.Response.budget.BudgetResponse;
+import com.duybao.QUANLYCHITIEU.DTO.request.BudgetRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

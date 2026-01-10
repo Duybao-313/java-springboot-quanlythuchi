@@ -1,8 +1,8 @@
 package com.duybao.QUANLYCHITIEU.Service;
 
 
-import com.duybao.QUANLYCHITIEU.Response.budget.BudgetResponse;
-import com.duybao.QUANLYCHITIEU.Response.budget.request.BudgetRequest;
+import com.duybao.QUANLYCHITIEU.DTO.Response.budget.BudgetResponse;
+import com.duybao.QUANLYCHITIEU.DTO.request.BudgetRequest;
 
 import java.util.List;
 

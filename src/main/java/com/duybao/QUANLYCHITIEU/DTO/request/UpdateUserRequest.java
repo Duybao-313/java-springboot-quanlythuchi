@@ -1,4 +1,4 @@
-package com.duybao.QUANLYCHITIEU.Response.User.Request;
+package com.duybao.QUANLYCHITIEU.DTO.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Email;

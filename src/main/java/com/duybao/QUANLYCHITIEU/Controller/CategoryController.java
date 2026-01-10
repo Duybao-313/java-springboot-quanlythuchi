@@ -2,9 +2,9 @@ package com.duybao.QUANLYCHITIEU.Controller;
 
 import com.duybao.QUANLYCHITIEU.Exception.AppException;
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
-import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
-import com.duybao.QUANLYCHITIEU.Response.category.CategoryResponse;
-import com.duybao.QUANLYCHITIEU.Response.category.Request.CategoryRequest;
+import com.duybao.QUANLYCHITIEU.DTO.Response.ApiResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.category.CategoryResponse;
+import com.duybao.QUANLYCHITIEU.DTO.request.CategoryRequest;
 import com.duybao.QUANLYCHITIEU.Service.CategoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

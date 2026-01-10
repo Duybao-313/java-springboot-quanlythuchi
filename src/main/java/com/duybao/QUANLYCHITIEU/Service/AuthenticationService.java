@@ -1,10 +1,10 @@
 package com.duybao.QUANLYCHITIEU.Service;
 
-import com.duybao.QUANLYCHITIEU.Response.User.Request.UserLoginRequest;
-import com.duybao.QUANLYCHITIEU.Response.User.Request.UserRegisterRequest;
-import com.duybao.QUANLYCHITIEU.Response.AuthResponse;
-import com.duybao.QUANLYCHITIEU.Response.RegisterResponse;
-import com.duybao.QUANLYCHITIEU.Response.User.UserDTO;
+import com.duybao.QUANLYCHITIEU.DTO.request.UserLoginRequest;
+import com.duybao.QUANLYCHITIEU.DTO.request.UserRegisterRequest;
+import com.duybao.QUANLYCHITIEU.DTO.Response.AuthResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.RegisterResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.User.UserDTO;
 
 
 public interface AuthenticationService {

@@ -1,7 +1,7 @@
 package com.duybao.QUANLYCHITIEU.Mappers;
 
 import com.duybao.QUANLYCHITIEU.Model.Category;
-import com.duybao.QUANLYCHITIEU.Response.category.CategoryResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.category.CategoryResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

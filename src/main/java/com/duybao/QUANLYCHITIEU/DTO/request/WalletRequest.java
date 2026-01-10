@@ -1,4 +1,4 @@
-package com.duybao.QUANLYCHITIEU.Response.Wallet.Request;
+package com.duybao.QUANLYCHITIEU.DTO.request;
 
 import com.duybao.QUANLYCHITIEU.Enum.WalletType;
 import jakarta.validation.constraints.NotBlank;

@@ -1,11 +1,8 @@
 package com.duybao.QUANLYCHITIEU.Service;
 
 import com.duybao.QUANLYCHITIEU.Enum.TransactionType;
-import com.duybao.QUANLYCHITIEU.Exception.AppException;
-import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
-import com.duybao.QUANLYCHITIEU.Model.Transaction;
-import com.duybao.QUANLYCHITIEU.Response.Transaction.Request.TransactionRequest;
-import com.duybao.QUANLYCHITIEU.Response.Transaction.TransactionResponse;
+import com.duybao.QUANLYCHITIEU.DTO.request.TransactionRequest;
+import com.duybao.QUANLYCHITIEU.DTO.Response.Transaction.TransactionResponse;
 
 import java.time.LocalDate;
 import java.util.List;

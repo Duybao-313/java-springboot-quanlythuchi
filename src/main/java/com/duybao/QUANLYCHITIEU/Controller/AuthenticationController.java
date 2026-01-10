@@ -1,13 +1,13 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
-import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
-import com.duybao.QUANLYCHITIEU.Response.User.Request.UserLoginRequest;
-import com.duybao.QUANLYCHITIEU.Response.User.Request.UserRegisterRequest;
+import com.duybao.QUANLYCHITIEU.Model.User;
+import com.duybao.QUANLYCHITIEU.DTO.request.UserLoginRequest;
+import com.duybao.QUANLYCHITIEU.DTO.request.UserRegisterRequest;
 import com.duybao.QUANLYCHITIEU.Mappers.UserMapper;
-import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
-import com.duybao.QUANLYCHITIEU.Response.AuthResponse;
-import com.duybao.QUANLYCHITIEU.Response.RegisterResponse;
-import com.duybao.QUANLYCHITIEU.Response.User.UserDTO;
+import com.duybao.QUANLYCHITIEU.DTO.Response.ApiResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.AuthResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.RegisterResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.User.UserDTO;
 import com.duybao.QUANLYCHITIEU.Service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,10 +51,10 @@ public class AuthenticationController {
         return authenticationService.jwtcode(a);
     }
     @GetMapping("/userdetail")
-    public ApiResponse<UserDTO> getCurrentUser(@AuthenticationPrincipal CustomUserDetail customUserDetail) {
+    public ApiResponse<UserDTO> getCurrentUser(@AuthenticationPrincipal User customUserDetail) {
 
         return ApiResponse.<UserDTO>builder()
-                .data(authenticationService.getUser(customUserDetail.getUser().getId()))
+                .data(authenticationService.getUser(customUserDetail.getId()))
                 .success(true)
                 .message("Lấy thông tin người dùng")
 

@@ -1,9 +1,9 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
-import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
-import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
-import com.duybao.QUANLYCHITIEU.Response.budget.BudgetResponse;
-import com.duybao.QUANLYCHITIEU.Response.budget.request.BudgetRequest;
+import com.duybao.QUANLYCHITIEU.Model.User;
+import com.duybao.QUANLYCHITIEU.DTO.Response.ApiResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.budget.BudgetResponse;
+import com.duybao.QUANLYCHITIEU.DTO.request.BudgetRequest;
 import com.duybao.QUANLYCHITIEU.Service.BudgetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,10 +20,10 @@ public class BudgetController {
 
     @PostMapping
     public ApiResponse<BudgetResponse> createBudget(@RequestBody BudgetRequest request,
-                                                    @AuthenticationPrincipal CustomUserDetail userDetails) {
+                                                    @AuthenticationPrincipal User userDetails) {
         return ApiResponse.<BudgetResponse>builder()
                 .message("Tạo ngân sách thành công")
-                .data(budgetService.createBudget(userDetails.getUser().getId(), request))
+                .data(budgetService.createBudget(userDetails.getId(), request))
                 .success(true)
                 .code(200)
                 .timestamp(LocalDateTime.now())
@@ -31,10 +31,10 @@ public class BudgetController {
     }
 
     @GetMapping
-    public ApiResponse<List<BudgetResponse>> getBudgets(@AuthenticationPrincipal CustomUserDetail userDetails) {
+    public ApiResponse<List<BudgetResponse>> getBudgets(@AuthenticationPrincipal User userDetails) {
         return ApiResponse.<List<BudgetResponse>>builder()
                 .message("Danh sách ngân sách")
-                .data(budgetService.getBudgets(userDetails.getUser().getId()))
+                .data(budgetService.getBudgets(userDetails.getId()))
                 .success(true)
                 .code(200)
                 .timestamp(LocalDateTime.now())
@@ -44,10 +44,10 @@ public class BudgetController {
     @PutMapping("/{id}")
     public ApiResponse<BudgetResponse> updateBudget(@PathVariable Long id,
                                                     @RequestBody BudgetRequest request,
-                                                    @AuthenticationPrincipal CustomUserDetail userDetails) {
+                                                    @AuthenticationPrincipal User userDetails) {
         return ApiResponse.<BudgetResponse>builder()
                 .message("Cập nhật ngân sách thành công")
-                .data(budgetService.updateBudget(userDetails.getUser().getId(), id, request))
+                .data(budgetService.updateBudget(userDetails.getId(), id, request))
                 .success(true)
                 .code(200)
                 .timestamp(LocalDateTime.now())
@@ -56,8 +56,8 @@ public class BudgetController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteBudget(@PathVariable Long id,
-                                          @AuthenticationPrincipal CustomUserDetail userDetails) {
-        budgetService.deleteBudget(userDetails.getUser().getId(), id);
+                                          @AuthenticationPrincipal User userDetails) {
+        budgetService.deleteBudget(userDetails.getId(), id);
         return ApiResponse.<Void>builder()
                 .message("Xóa ngân sách thành công")
                 .success(true)

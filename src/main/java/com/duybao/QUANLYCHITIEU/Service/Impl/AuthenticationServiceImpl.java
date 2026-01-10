@@ -1,20 +1,19 @@
 package com.duybao.QUANLYCHITIEU.Service.Impl;
 
 
-import com.duybao.QUANLYCHITIEU.Response.User.Request.UserLoginRequest;
-import com.duybao.QUANLYCHITIEU.Response.User.Request.UserRegisterRequest;
-import com.duybao.QUANLYCHITIEU.Response.User.UserDTO;
+import com.duybao.QUANLYCHITIEU.DTO.request.UserLoginRequest;
+import com.duybao.QUANLYCHITIEU.DTO.request.UserRegisterRequest;
+import com.duybao.QUANLYCHITIEU.DTO.Response.User.UserDTO;
 import com.duybao.QUANLYCHITIEU.Enum.UserStatus;
 import com.duybao.QUANLYCHITIEU.Exception.AppException;
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Mappers.UserMapper;
-import com.duybao.QUANLYCHITIEU.Model.CustomUserDetail;
 import com.duybao.QUANLYCHITIEU.Model.User;
 import com.duybao.QUANLYCHITIEU.Repository.RoleRepository;
 import com.duybao.QUANLYCHITIEU.Repository.UserRepository;
 
-import com.duybao.QUANLYCHITIEU.Response.AuthResponse;
-import com.duybao.QUANLYCHITIEU.Response.RegisterResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.AuthResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.RegisterResponse;
 import com.duybao.QUANLYCHITIEU.Service.AuthenticationService;
 import com.duybao.QUANLYCHITIEU.Service.JwtService;
 
@@ -26,6 +25,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -73,15 +73,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthResponse login(UserLoginRequest a) {
         try {
-       Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(a.getUsername(), a.getPassword())
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(a.getUsername(),a.getPassword()
             );
+            Authentication authentication= authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            CustomUserDetail userDetail = (CustomUserDetail) authentication.getPrincipal();
-            User user = userDetail.getUser();
-            String token = jwtService.generateToken(user);
-            UserDTO userDTO = userMapper.toDTO(user); //
-            String role = user.getRole().getName();
+            User user1 =(User) authentication.getPrincipal();
+
+            String token = jwtService.generateToken(user1);
+            UserDTO userDTO = userMapper.toDTO(user1); //
+            String role = user1.getRole().getName();
             return new AuthResponse(token, role, userDTO);
         }
 catch (BadCredentialsException e) {
@@ -95,9 +96,7 @@ catch (BadCredentialsException e) {
            Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(a.getUsername(), a.getPassword())
             );
-            CustomUserDetail customUserDetail = (CustomUserDetail) authentication.getPrincipal();
-
-            User user =customUserDetail.getUser();
+            User user = (User) authentication.getPrincipal();
             String token = jwtService.generateToken(user);
 
             System.out.println("Token: " + token);

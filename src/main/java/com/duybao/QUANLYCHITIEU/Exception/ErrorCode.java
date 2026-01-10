@@ -22,7 +22,7 @@ public enum ErrorCode {
     INTERNAL_ERROR(1013,"Lỗi nội bộ", HttpStatus.INTERNAL_SERVER_ERROR),
     CATEGORY_EXIST(1014,"Danh mục đã tồn tại", HttpStatus.BAD_REQUEST),
     CATEGORY_ALREADY_ASSIGNED(1015,"Đã gán danh mục này", HttpStatus.CONFLICT),
-    AMOUNT_NOT_NEGATIVE(1016,"Số tiền không được âm", HttpStatus.BAD_REQUEST),
+    AMOUNT_NOT_NEGATIVE(1016,"Số tiền không được âm hoặc =0", HttpStatus.BAD_REQUEST),
     READ_FILE_ERROR(1017,"Lỗi khi đọc file", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_REQUEST(1018,"Yêu cầu không hợp lệ",HttpStatus.BAD_REQUEST),
     USERNAME_NOT_NULL(1019,"Tài khoản không được để trống",HttpStatus.BAD_REQUEST),

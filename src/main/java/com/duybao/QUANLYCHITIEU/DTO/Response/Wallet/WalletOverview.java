@@ -1,4 +1,4 @@
-package com.duybao.QUANLYCHITIEU.Response.Wallet;
+package com.duybao.QUANLYCHITIEU.DTO.Response.Wallet;
 
 
 import lombok.AllArgsConstructor;

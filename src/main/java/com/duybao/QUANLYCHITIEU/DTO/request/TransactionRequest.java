@@ -1,8 +1,10 @@
-package com.duybao.QUANLYCHITIEU.Response.Transaction.Request;
+package com.duybao.QUANLYCHITIEU.DTO.request;
 
-import com.duybao.QUANLYCHITIEU.Enum.TransactionType;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -11,6 +13,7 @@ import java.math.BigDecimal;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TransactionRequest {
     @NotNull(message = "Số tiền không được để trống")
+    @DecimalMin(value = "1.1",message = "AMOUNT_NOT_NEGATIVE")
     private BigDecimal amount;
 
     private String description;

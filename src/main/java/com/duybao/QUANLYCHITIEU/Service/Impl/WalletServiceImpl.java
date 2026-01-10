@@ -10,9 +10,9 @@ import com.duybao.QUANLYCHITIEU.Model.Wallet;
 import com.duybao.QUANLYCHITIEU.Repository.TransactionRepository;
 import com.duybao.QUANLYCHITIEU.Repository.UserRepository;
 import com.duybao.QUANLYCHITIEU.Repository.WalletRepository;
-import com.duybao.QUANLYCHITIEU.Response.Wallet.Request.WalletRequest;
-import com.duybao.QUANLYCHITIEU.Response.Wallet.WalletOverview;
-import com.duybao.QUANLYCHITIEU.Response.Wallet.WalletResponse;
+import com.duybao.QUANLYCHITIEU.DTO.request.WalletRequest;
+import com.duybao.QUANLYCHITIEU.DTO.Response.Wallet.WalletOverview;
+import com.duybao.QUANLYCHITIEU.DTO.Response.Wallet.WalletResponse;
 import com.duybao.QUANLYCHITIEU.Service.ImageService;
 import com.duybao.QUANLYCHITIEU.Service.WalletService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

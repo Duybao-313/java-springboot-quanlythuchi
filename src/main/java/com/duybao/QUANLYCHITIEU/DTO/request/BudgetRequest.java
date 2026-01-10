@@ -1,4 +1,4 @@
-package com.duybao.QUANLYCHITIEU.Response.budget.request;
+package com.duybao.QUANLYCHITIEU.DTO.request;
 
 import lombok.Data;
 

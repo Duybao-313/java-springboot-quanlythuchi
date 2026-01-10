@@ -1,7 +1,7 @@
 package com.duybao.QUANLYCHITIEU.Config;
 
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
-import com.duybao.QUANLYCHITIEU.Response.ApiResponse;
+import com.duybao.QUANLYCHITIEU.DTO.Response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package com.duybao.QUANLYCHITIEU.Response.category;
+package com.duybao.QUANLYCHITIEU.DTO.Response.category;
 
 import com.duybao.QUANLYCHITIEU.Enum.TransactionType;
 import lombok.AllArgsConstructor;

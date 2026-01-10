@@ -1,8 +1,8 @@
 package com.duybao.QUANLYCHITIEU.Mappers;
 
-import com.duybao.QUANLYCHITIEU.Response.User.Request.UpdateUserRequest;
-import com.duybao.QUANLYCHITIEU.Response.User.Request.UserRegisterRequest;
-import com.duybao.QUANLYCHITIEU.Response.User.UserDTO;
+import com.duybao.QUANLYCHITIEU.DTO.request.UpdateUserRequest;
+import com.duybao.QUANLYCHITIEU.DTO.request.UserRegisterRequest;
+import com.duybao.QUANLYCHITIEU.DTO.Response.User.UserDTO;
 import com.duybao.QUANLYCHITIEU.Model.User;
 
 import org.mapstruct.*;

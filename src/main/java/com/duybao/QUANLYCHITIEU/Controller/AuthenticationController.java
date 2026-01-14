@@ -1,5 +1,6 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
+import com.duybao.QUANLYCHITIEU.DTO.request.LogoutRequest;
 import com.duybao.QUANLYCHITIEU.Model.User;
 import com.duybao.QUANLYCHITIEU.DTO.request.UserLoginRequest;
 import com.duybao.QUANLYCHITIEU.DTO.request.UserRegisterRequest;
@@ -9,11 +10,14 @@ import com.duybao.QUANLYCHITIEU.DTO.Response.AuthResponse;
 import com.duybao.QUANLYCHITIEU.DTO.Response.RegisterResponse;
 import com.duybao.QUANLYCHITIEU.DTO.Response.User.UserDTO;
 import com.duybao.QUANLYCHITIEU.Service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jwt.SignedJWT;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.time.LocalDateTime;
 
 @RestController
@@ -61,5 +65,14 @@ public class AuthenticationController {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
+    @PostMapping ("/logout") ApiResponse<String> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+       authenticationService.Logout(request);
+        return ApiResponse.<String>builder()
+                .success(true)
+                .message("Đăng xuất thành công")
+                .build();
+    }
+
 
 }

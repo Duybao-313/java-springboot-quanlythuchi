@@ -1,6 +1,8 @@
 package com.duybao.QUANLYCHITIEU.Service.Impl;
 
 
+import com.duybao.QUANLYCHITIEU.DTO.Response.TokenResponse;
+import com.duybao.QUANLYCHITIEU.DTO.request.LogoutRequest;
 import com.duybao.QUANLYCHITIEU.DTO.request.UserLoginRequest;
 import com.duybao.QUANLYCHITIEU.DTO.request.UserRegisterRequest;
 import com.duybao.QUANLYCHITIEU.DTO.Response.User.UserDTO;
@@ -8,7 +10,9 @@ import com.duybao.QUANLYCHITIEU.Enum.UserStatus;
 import com.duybao.QUANLYCHITIEU.Exception.AppException;
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Mappers.UserMapper;
+import com.duybao.QUANLYCHITIEU.Model.InvalidatedToken;
 import com.duybao.QUANLYCHITIEU.Model.User;
+import com.duybao.QUANLYCHITIEU.Repository.InvalidatedTokenRepository;
 import com.duybao.QUANLYCHITIEU.Repository.RoleRepository;
 import com.duybao.QUANLYCHITIEU.Repository.UserRepository;
 
@@ -18,8 +22,12 @@ import com.duybao.QUANLYCHITIEU.Service.AuthenticationService;
 import com.duybao.QUANLYCHITIEU.Service.JwtService;
 
 
-
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,11 +37,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
+    @Value("${jwt.secret}")
+    protected String SECRET_KEY ;
 
     private final UserMapper userMapper;
 
@@ -42,6 +55,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
 
 
     @Override
@@ -111,6 +125,19 @@ catch (BadCredentialsException e) {
         User user= userRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
         return userMapper.toDTO(user);
     }
+    @Override
+    public void Logout(LogoutRequest request) throws ParseException, JOSEException {
+        var signToken=jwtService.VerifyToken(request.getToken());
+        String id=signToken.getJWTClaimsSet().getJWTID();
+        Date dateExpiry =signToken.getJWTClaimsSet().getExpirationTime();
+        InvalidatedToken invalidatedToken= InvalidatedToken.builder()
+                .id(id)
+                .expiryTime(dateExpiry)
+                .build();
+        invalidatedTokenRepository.save(invalidatedToken);
+    };
+
+
 
 
 }

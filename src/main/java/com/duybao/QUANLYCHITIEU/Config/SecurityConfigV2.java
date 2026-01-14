@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -35,10 +36,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfigV2 {
-//    private final JwtDecoderConfig jwtDecoderConfig;
+    private final @Lazy JwtDecoderConfig jwtDecoderConfig;
     private  final jwtConverter jwtConverter;
-    @Value("${jwt.secret}")
-    private String SECRET_KEY ;
+private  final JwtAuthenticatedEntryPoint jwtAuthenticatedEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -52,7 +52,9 @@ public class SecurityConfigV2 {
 
                 )
                 .oauth2ResourceServer((oauth2) ->
-                        oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()).jwtAuthenticationConverter(jwtConverter)));
+                        oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoderConfig).jwtAuthenticationConverter(jwtConverter)))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticatedEntryPoint));
+
         return http.build();
     }
 
@@ -66,22 +68,14 @@ public class SecurityConfigV2 {
 
         return new ProviderManager(authenticationProvider);
     }
-    @Bean
-    public JwtDecoder jwtDecoder(){
-        SecretKeySpec s= new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8),"HS512");
 
-        return NimbusJwtDecoder.withSecretKey(s)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
-    };
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Thêm origin frontend của bạn, ví dụ http://localhost:3000
         configuration.setAllowedOrigins(List.of("http://localhost:5173","https://chitieuweb.vercel.app"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true); // nếu cần gửi cookie/token
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

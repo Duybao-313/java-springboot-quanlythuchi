@@ -41,7 +41,7 @@ public class TransactionServiceImpl implements TransactionService {
         Wallet wallet = walletRepository.findById(request.getWalletId())
                 .orElseThrow(() -> new AppException(ErrorCode.WALLET_NOT_FOUND));
         if (!wallet.getUser().getId().equals(userId)) {
-            throw new  AppException(ErrorCode.USER_NOT_AUTHORIZED);
+            throw new  AppException(ErrorCode.UNAUTHENTICATED);
         }
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -94,7 +94,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new AppException(ErrorCode.TRANSACTION_NOT_FOUND));
 
         if (!transaction.getUser().getId().equals(userId)) {
-            throw new AppException(ErrorCode.USER_NOT_AUTHORIZED);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
         transaction.setAmount(request.getAmount());
@@ -112,7 +112,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new AppException(ErrorCode.TRANSACTION_NOT_FOUND));
 
         if (!transaction.getUser().getId().equals(userId)) {
-            throw new AppException(ErrorCode.USER_NOT_AUTHORIZED);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
         transactionRepository.delete(transaction);

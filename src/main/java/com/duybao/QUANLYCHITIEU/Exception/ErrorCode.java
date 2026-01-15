@@ -13,7 +13,7 @@ public enum ErrorCode {
     WALLET_NOT_FOUND(1004,"Không tìm thấy ví", HttpStatus.NOT_FOUND),
     CATEGORY_NOT_FOUND(1005,"Không tìm thấy danh mục", HttpStatus.NOT_FOUND),
     WALLET_NOT_ENOUGH(1006,"Số dư không đủ", HttpStatus.BAD_REQUEST),
-    USER_NOT_AUTHORIZED(1007,"Không có quyền", HttpStatus.FORBIDDEN),
+    UNAUTHENTICATED(1007,"Không có quyền", HttpStatus.FORBIDDEN),
     BUDGET_NOT_FOUND(1008,"Không tìm thấy budget", HttpStatus.NOT_FOUND),
     TRANSACTION_NOT_FOUND(1009,"Không tìm thấy giao dịch", HttpStatus.NOT_FOUND),
     PASSWORD_INCORRECT(1010,"Mật khẩu không đúng", HttpStatus.UNAUTHORIZED),

@@ -2,7 +2,6 @@ package com.duybao.QUANLYCHITIEU.Config;
 
 import com.duybao.QUANLYCHITIEU.Service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -16,19 +15,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Configuration
@@ -38,8 +29,6 @@ import java.util.List;
 public class SecurityConfigV2 {
     private final @Lazy JwtDecoderConfig jwtDecoderConfig;
     private  final jwtConverter jwtConverter;
-private  final JwtAuthenticatedEntryPoint jwtAuthenticatedEntryPoint;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -47,13 +36,15 @@ private  final JwtAuthenticatedEntryPoint jwtAuthenticatedEntryPoint;
                 .cors(c->c.configurationSource(corsConfigurationSource()))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize
-                                .requestMatchers("/auth/login", "/auth/register","/auth/code").permitAll()
+                                .requestMatchers("/auth/login", "/auth/register","/auth/refresh").permitAll()
                         .anyRequest().authenticated()
 
                 )
                 .oauth2ResourceServer((oauth2) ->
-                        oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoderConfig).jwtAuthenticationConverter(jwtConverter)))
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticatedEntryPoint));
+                        oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoderConfig)
+                                .jwtAuthenticationConverter(jwtConverter))
+                                .authenticationEntryPoint(new JwtAuthenticatedEntryPoint()));
+
 
         return http.build();
     }

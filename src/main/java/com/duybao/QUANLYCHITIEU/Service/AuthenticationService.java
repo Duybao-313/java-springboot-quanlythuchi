@@ -18,7 +18,7 @@ public interface AuthenticationService {
 
    public AuthResponse login(UserLoginRequest a);
 
-   public  String jwtcode(UserLoginRequest a);
+
     public UserDTO getUser(Long id);
     public void Logout(LogoutRequest request) throws ParseException, JOSEException;
 }

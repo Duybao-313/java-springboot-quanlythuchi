@@ -45,7 +45,7 @@ public class BudgetServiceImpl implements BudgetService {
                 .orElseThrow(() -> new AppException(ErrorCode.BUDGET_NOT_FOUND));
 
         if (!budget.getUser().getId().equals(userId)) {
-            throw new  AppException(ErrorCode.USER_NOT_AUTHORIZED);
+            throw new  AppException(ErrorCode.UNAUTHENTICATED);
         }
 
         budget.setAmountLimit(request.getAmountLimit());
@@ -61,7 +61,7 @@ public class BudgetServiceImpl implements BudgetService {
                 .orElseThrow(() -> new AppException(ErrorCode.BUDGET_NOT_FOUND));
 
         if (!budget.getUser().getId().equals(userId)) {
-            throw new AppException(ErrorCode.USER_NOT_AUTHORIZED);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
         budgetRepository.delete(budget);

@@ -5,7 +5,6 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
-import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,7 +28,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(org.springframework.security.authorization.AuthorizationDeniedException.class)
     public ResponseEntity<ApiResponse<Object>> handleAccessDeniedExceptions(AuthorizationDeniedException ex) {
-        ErrorCode errorCode = ErrorCode.USER_NOT_AUTHORIZED;
+        ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
         ApiResponse<Object> response = ApiResponse.builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
@@ -38,16 +37,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
-    @ExceptionHandler(JwtException.class)
-    public ResponseEntity<ApiResponse<Object>> handleJwtException(JwtException ex) {
-        ErrorCode errorCode = ErrorCode.TOKEN_INVALID;
-        ApiResponse<Object> response = ApiResponse.builder()
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-    }
+//    @ExceptionHandler(JwtException.class)
+//    public ResponseEntity<ApiResponse<Object>> handleJwtException(JwtException ex) {
+//        ErrorCode errorCode = ErrorCode.TOKEN_INVALID;
+//        ApiResponse<Object> response = ApiResponse.builder()
+//                .code(errorCode.getCode())
+//                .message(errorCode.getMessage())
+//                .timestamp(LocalDateTime.now())
+//                .build();
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+//    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {

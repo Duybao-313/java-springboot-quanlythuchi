@@ -1,6 +1,7 @@
 package com.duybao.QUANLYCHITIEU.Service.Impl;
 
 
+import com.duybao.QUANLYCHITIEU.DTO.Response.RefreshToken;
 import com.duybao.QUANLYCHITIEU.DTO.Response.TokenResponse;
 import com.duybao.QUANLYCHITIEU.DTO.request.LogoutRequest;
 import com.duybao.QUANLYCHITIEU.DTO.request.UserLoginRequest;
@@ -27,6 +28,7 @@ import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -42,6 +44,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -94,7 +97,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             User user1 =(User) authentication.getPrincipal();
 
-            String token = jwtService.generateToken(user1);
+            String token = jwtService.generateToken(user1).getToken();
             UserDTO userDTO = userMapper.toDTO(user1); //
             String role = user1.getRole().getName();
             return new AuthResponse(token, role, userDTO);
@@ -104,22 +107,7 @@ catch (BadCredentialsException e) {
         }
     }
 
-    @Override
-    public String jwtcode(UserLoginRequest a) {
-        try {
-           Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(a.getUsername(), a.getPassword())
-            );
-            User user = (User) authentication.getPrincipal();
-            String token = jwtService.generateToken(user);
 
-            System.out.println("Token: " + token);
-            return token;
-        } catch (Exception e) {
-            System.out.println(" Lỗi xác thực: " + e.getClass().getSimpleName() + " - " + e.getMessage());
-            throw e;
-        }
-    }
     @Override
     public UserDTO getUser(Long id) {
         User user= userRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
@@ -127,15 +115,20 @@ catch (BadCredentialsException e) {
     }
     @Override
     public void Logout(LogoutRequest request) throws ParseException, JOSEException {
-        var signToken=jwtService.VerifyToken(request.getToken());
-        String id=signToken.getJWTClaimsSet().getJWTID();
-        Date dateExpiry =signToken.getJWTClaimsSet().getExpirationTime();
-        InvalidatedToken invalidatedToken= InvalidatedToken.builder()
-                .id(id)
-                .expiryTime(dateExpiry)
-                .build();
-        invalidatedTokenRepository.save(invalidatedToken);
+      try  {
+            var signToken = jwtService.VerifyToken(request.getToken(), true);
+            String id = signToken.getJWTClaimsSet().getJWTID();
+            Date dateExpiry = signToken.getJWTClaimsSet().getExpirationTime();
+            InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                    .id(id)
+                    .expiryTime(dateExpiry)
+                    .build();
+            invalidatedTokenRepository.save(invalidatedToken);
+        }catch (AppException e){
+          log.info("token exp");
+      }
     };
+
 
 
 

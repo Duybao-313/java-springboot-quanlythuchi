@@ -66,7 +66,7 @@ public class WalletServiceImpl implements WalletService {
                 .orElseThrow(() -> new AppException(ErrorCode.WALLET_NOT_FOUND));
 
         if (!wallet.getUser().getId().equals(userId)) {
-            throw new AppException(ErrorCode.USER_NOT_AUTHORIZED);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
         wallet.setName(request.getName());
@@ -82,7 +82,7 @@ public class WalletServiceImpl implements WalletService {
         Wallet wallet = walletRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.WALLET_NOT_FOUND));
         if (!wallet.getUser().getId().equals(userId)) {
-            throw new AppException(ErrorCode.USER_NOT_AUTHORIZED);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
         if(!transactionRepository.findByUserAndWallet(userId,id).isEmpty()){
             List<Transaction> txs = transactionRepository.findByUserAndWallet(userId, id);

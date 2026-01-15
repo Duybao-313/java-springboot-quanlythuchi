@@ -1,6 +1,8 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
+import com.duybao.QUANLYCHITIEU.DTO.Response.RefreshToken;
 import com.duybao.QUANLYCHITIEU.DTO.request.LogoutRequest;
+import com.duybao.QUANLYCHITIEU.DTO.request.RefreshRequest;
 import com.duybao.QUANLYCHITIEU.Model.User;
 import com.duybao.QUANLYCHITIEU.DTO.request.UserLoginRequest;
 import com.duybao.QUANLYCHITIEU.DTO.request.UserRegisterRequest;
@@ -10,6 +12,7 @@ import com.duybao.QUANLYCHITIEU.DTO.Response.AuthResponse;
 import com.duybao.QUANLYCHITIEU.DTO.Response.RegisterResponse;
 import com.duybao.QUANLYCHITIEU.DTO.Response.User.UserDTO;
 import com.duybao.QUANLYCHITIEU.Service.AuthenticationService;
+import com.duybao.QUANLYCHITIEU.Service.JwtService;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.validation.Valid;
@@ -26,6 +29,7 @@ import java.time.LocalDateTime;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final JwtService jwtService;
     private final UserMapper userMapper;
 
     @PostMapping("/register")
@@ -51,9 +55,6 @@ public class AuthenticationController {
 
     }
 
-    @PostMapping("/code") String testjwt (@RequestBody UserLoginRequest a){
-        return authenticationService.jwtcode(a);
-    }
     @GetMapping("/userdetail")
     public ApiResponse<UserDTO> getCurrentUser(@AuthenticationPrincipal User customUserDetail) {
 
@@ -73,6 +74,11 @@ public class AuthenticationController {
                 .message("Đăng xuất thành công")
                 .build();
     }
+    @PostMapping ("/refresh") ApiResponse<RefreshToken> logout(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
+        return ApiResponse.<RefreshToken>builder()
+                .success(true)
+                .data(jwtService.refreshToken(request.getToken()))
+                .message("tao thanh cong")
+                .build();
 
-
-}
+}}

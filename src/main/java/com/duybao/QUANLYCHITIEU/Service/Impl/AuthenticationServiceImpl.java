@@ -1,8 +1,7 @@
 package com.duybao.QUANLYCHITIEU.Service.Impl;
 
 
-import com.duybao.QUANLYCHITIEU.DTO.Response.RefreshToken;
-import com.duybao.QUANLYCHITIEU.DTO.Response.TokenResponse;
+import com.duybao.QUANLYCHITIEU.DTO.request.ChangePasswordRequest;
 import com.duybao.QUANLYCHITIEU.DTO.request.LogoutRequest;
 import com.duybao.QUANLYCHITIEU.DTO.request.UserLoginRequest;
 import com.duybao.QUANLYCHITIEU.DTO.request.UserRegisterRequest;
@@ -24,9 +23,6 @@ import com.duybao.QUANLYCHITIEU.Service.JwtService;
 
 
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +35,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -111,7 +106,7 @@ catch (BadCredentialsException e) {
     @Override
     public UserDTO getUser(Long id) {
         User user= userRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
-        return userMapper.toDTO(user);
+               return userMapper.toDTO(user);
     }
     @Override
     public void Logout(LogoutRequest request) throws ParseException, JOSEException {
@@ -128,6 +123,23 @@ catch (BadCredentialsException e) {
           log.info("token exp");
       }
     };
+    public boolean changePassword(ChangePasswordRequest request, Long id){
+      User  user =userRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
+      var oldPass =request.getOldPass();
+        var newPass1 =request.getNewPass1();
+        var newPass2 =request.getNewPass2();
+        if( !passwordEncoder.matches(oldPass,user.getPassword()))
+            throw new AppException(ErrorCode.PASSWORD_INCORRECT);
+        if (!newPass1.equals(newPass2))
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        if(newPass1.equals(oldPass))
+            throw new AppException(ErrorCode.SAME_PASSWORD);
+        user.setPassword(passwordEncoder.encode(newPass1));
+        userRepository.save(user);
+        return true;
+
+    };
+
 
 
 

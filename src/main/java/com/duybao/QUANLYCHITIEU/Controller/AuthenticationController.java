@@ -1,11 +1,8 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
 import com.duybao.QUANLYCHITIEU.DTO.Response.RefreshToken;
-import com.duybao.QUANLYCHITIEU.DTO.request.LogoutRequest;
-import com.duybao.QUANLYCHITIEU.DTO.request.RefreshRequest;
+import com.duybao.QUANLYCHITIEU.DTO.request.*;
 import com.duybao.QUANLYCHITIEU.Model.User;
-import com.duybao.QUANLYCHITIEU.DTO.request.UserLoginRequest;
-import com.duybao.QUANLYCHITIEU.DTO.request.UserRegisterRequest;
 import com.duybao.QUANLYCHITIEU.Mappers.UserMapper;
 import com.duybao.QUANLYCHITIEU.DTO.Response.ApiResponse;
 import com.duybao.QUANLYCHITIEU.DTO.Response.AuthResponse;
@@ -67,13 +64,14 @@ public class AuthenticationController {
                 .build();
     }
 
-    @PostMapping ("/logout") ApiResponse<String> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+    @PostMapping ("/logout") ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
        authenticationService.Logout(request);
-        return ApiResponse.<String>builder()
+        return ApiResponse.<Void>builder()
                 .success(true)
                 .message("Đăng xuất thành công")
                 .build();
     }
+
     @PostMapping ("/refresh") ApiResponse<RefreshToken> logout(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
         return ApiResponse.<RefreshToken>builder()
                 .success(true)
@@ -81,4 +79,13 @@ public class AuthenticationController {
                 .message("tao thanh cong")
                 .build();
 
-}}
+}
+    @PostMapping ("/change-password") ApiResponse<Void> changePassword(@AuthenticationPrincipal User user,@RequestBody ChangePasswordRequest request)  {
+       var res= authenticationService.changePassword(request,user.getId());
+        return ApiResponse.<Void>builder()
+                .success(res)
+                .message("Đổi mật khẩu thành công")
+                .build();
+    }
+
+}

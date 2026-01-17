@@ -13,5 +13,5 @@ import java.util.Date;
 @Builder
 public class RefreshToken {
     private  String token;
-    private Date ExpiryDate;
+    private Date expiryDate;
 }

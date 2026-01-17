@@ -31,7 +31,8 @@ public enum ErrorCode {
     PASSWORD_NOT_NULL(1022,"Mật khẩu không đưuọc để trống",HttpStatus.BAD_REQUEST),
     PASSWORD_TOO_SHORT(1023,"Mật khẩu phải trên 6 ký tự",HttpStatus.BAD_REQUEST),
     EMAIL_INVALID(1024,"Email không hợp lệ",HttpStatus.BAD_REQUEST),
-    INVALID_USERNAME(1024,"Tài khoản không hợp lệ",HttpStatus.BAD_REQUEST)
+    INVALID_USERNAME(1024,"Tài khoản không hợp lệ",HttpStatus.BAD_REQUEST),
+    SAME_PASSWORD(1025,"Mật khẩu bị trùng",HttpStatus.BAD_REQUEST)
 
 
 

@@ -94,7 +94,7 @@ public class JwtService {
         var refreshToken=generateToken(user).getToken();
         return  RefreshToken.builder()
                 .token(refreshToken)
-                .ExpiryDate(expiration)
+                .expiryDate(expiration)
                 .build();
     }
 

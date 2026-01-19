@@ -1,5 +1,6 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
+import com.duybao.QUANLYCHITIEU.DTO.request.TransferRequest;
 import com.duybao.QUANLYCHITIEU.Enum.TransactionType;
 import com.duybao.QUANLYCHITIEU.Model.User;
 import com.duybao.QUANLYCHITIEU.DTO.Response.ApiResponse;
@@ -29,6 +30,18 @@ public class TransactionController {
         return ApiResponse.<TransactionResponse>builder()
                 .message("Tạo thành công giao dịch")
                 .data(transactionService.createTransaction(userDetails.getId(),request))
+                .success(true)
+                .code(200)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @PostMapping("/transfer")
+    public ApiResponse<TransactionResponse> createTransfer(@RequestBody @Valid TransferRequest request,
+                                                              @AuthenticationPrincipal User userDetails) {
+        return ApiResponse.<TransactionResponse>builder()
+                .message("Chuyển tiền thành công")
+                .data(transactionService.transferTransaction(userDetails.getId(),request))
                 .success(true)
                 .code(200)
                 .timestamp(LocalDateTime.now())

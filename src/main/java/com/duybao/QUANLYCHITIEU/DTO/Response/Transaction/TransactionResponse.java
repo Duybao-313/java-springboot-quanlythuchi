@@ -2,6 +2,7 @@ package com.duybao.QUANLYCHITIEU.DTO.Response.Transaction;
 
 import com.duybao.QUANLYCHITIEU.Enum.TransactionType;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TransactionResponse {
     private Long id;
     private BigDecimal amount;
@@ -17,7 +19,7 @@ public class TransactionResponse {
     private String description;
     private String categoryName;
     private String walletName;
-//    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    //    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime date;
 
 }

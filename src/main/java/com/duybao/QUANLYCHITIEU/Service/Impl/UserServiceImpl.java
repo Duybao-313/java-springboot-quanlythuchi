@@ -36,7 +36,9 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUser(Long id) {
         var context= SecurityContextHolder.getContext().getAuthentication().getName();
         User user=userRepository.findByUsername(context).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
-        return userMapper.toDTO(user);
+        UserDTO userDTO= userMapper.toDTO(user);
+        userDTO.setRole(user.getRole().getName());
+        return userDTO;
     }
 
     @Override

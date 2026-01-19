@@ -31,7 +31,7 @@ public class Transaction {
     private LocalDateTime date;
 
     @Enumerated(EnumType.STRING)
-    private TransactionType type; // EXPENSE hoặc INCOME
+    private TransactionType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

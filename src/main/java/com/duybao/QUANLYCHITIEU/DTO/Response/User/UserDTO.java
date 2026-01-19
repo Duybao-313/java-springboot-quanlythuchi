@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
         private String phone;
         private String avatarUrl;
         private String address;
+        private String role;
 
         @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
         private LocalDateTime createdAt;

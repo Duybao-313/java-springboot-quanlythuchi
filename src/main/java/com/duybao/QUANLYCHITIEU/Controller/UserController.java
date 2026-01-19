@@ -61,8 +61,7 @@ public class UserController {
 
     @GetMapping("/info")
     public ApiResponse<UserDTO> getCurrentUser(@AuthenticationPrincipal User user) {
-        var a  = SecurityContextHolder.getContext().getAuthentication();
-        log.info("name"+a.getPrincipal());
+
 
         return ApiResponse.<UserDTO>builder()
                 .data(userService.getUser( user.getId()))

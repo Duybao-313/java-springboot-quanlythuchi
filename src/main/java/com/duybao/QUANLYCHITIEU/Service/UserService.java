@@ -11,6 +11,7 @@ public interface UserService {
     public List<UserDTO> getAllUser();
 
 
+
     public UserDTO getUser(Long id);
 
     public UserDTO updateUser(Long id, UpdateUserRequest userRequest);

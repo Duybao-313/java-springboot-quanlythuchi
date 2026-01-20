@@ -12,6 +12,10 @@ import java.util.List;
 @Repository
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
     List<Wallet> findByUserId(Long userId);
+    @Query("select count(w) from Wallet w where w.user.id = :userId")
+    long countWalletsByUserId(Long userId);
     @Query("select Coalesce(sum(t.balance),0) from Wallet t where t.user.id=:userId")
     BigDecimal SumBalanceByUserId(@Param( "userId")Long userId);
+    @Query("select sum(t.balance) from Wallet t")
+    BigDecimal SumBalanceAllUser();
 }

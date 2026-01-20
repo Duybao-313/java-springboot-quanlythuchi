@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -54,6 +55,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
-//    @Query("Select count(t")
-//    int countTransactionByCategoryId(@Param("categoryId")Long categoryId);
+    @Query("Select Count(t) from Transaction t where t.date between :start and :end")
+    Long countTransactionByDate(LocalDateTime start,LocalDateTime end);
 }

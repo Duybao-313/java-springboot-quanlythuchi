@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 @RequiredArgsConstructor
 @Service
@@ -36,8 +37,10 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUser(Long id) {
         var context= SecurityContextHolder.getContext().getAuthentication().getName();
         User user=userRepository.findByUsername(context).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
         UserDTO userDTO= userMapper.toDTO(user);
-        userDTO.setRole(user.getRole().getName());
+        userDTO.setRole(user.getRole());
         return userDTO;
     }
 

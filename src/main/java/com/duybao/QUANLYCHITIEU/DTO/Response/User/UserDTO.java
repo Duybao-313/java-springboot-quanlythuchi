@@ -1,6 +1,7 @@
 package com.duybao.QUANLYCHITIEU.DTO.Response.User;
 
 import com.duybao.QUANLYCHITIEU.Enum.UserStatus;
+import com.duybao.QUANLYCHITIEU.Model.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
         private String phone;
         private String avatarUrl;
         private String address;
-        private String role;
+        private Role role;
 
         @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
         private LocalDateTime createdAt;

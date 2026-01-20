@@ -91,7 +91,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             User user1 =(User) authentication.getPrincipal();
-
+            user1.setUpdatedAt(LocalDateTime.now());
+            userRepository.save(user1);
             String token = jwtService.generateToken(user1).getToken();
             UserDTO userDTO = userMapper.toDTO(user1); //
             String role = user1.getRole().getName();

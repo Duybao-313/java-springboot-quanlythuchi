@@ -1,5 +1,6 @@
 package com.duybao.QUANLYCHITIEU.Config;
 
+import com.duybao.QUANLYCHITIEU.Enum.UserStatus;
 import com.duybao.QUANLYCHITIEU.Exception.AppException;
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Model.User;
@@ -31,7 +32,7 @@ public class ApplicationInitConfig {
                         .email("admin@admin.com")
                         .password(passwordEncoder.encode("admin"))
                         .role(roleRepository.findById(2).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND)))
-
+                        .status(UserStatus.ACTIVE)
                         .build();
                 userRepository.save(user);
                 log.info("tao thanh cong admin");

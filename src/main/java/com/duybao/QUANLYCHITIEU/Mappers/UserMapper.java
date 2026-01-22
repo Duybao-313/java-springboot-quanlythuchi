@@ -17,6 +17,7 @@ public interface UserMapper {
 
     @Mapping(target = "walletCount", ignore = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "role", source = "role.name")
     UserSummaryDto toAdminDTO(User user);
 
     List<UserSummaryDto> toAdminDTOs(List<User> users);

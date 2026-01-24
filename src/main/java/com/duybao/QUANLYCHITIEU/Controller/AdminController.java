@@ -1,6 +1,7 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
 import com.duybao.QUANLYCHITIEU.DTO.Response.Admin.AdminDashboardOverview;
+import com.duybao.QUANLYCHITIEU.DTO.Response.Admin.ImportResultDto;
 import com.duybao.QUANLYCHITIEU.DTO.Response.Admin.UserSummaryDto;
 import com.duybao.QUANLYCHITIEU.DTO.Response.ApiResponse;
 import com.duybao.QUANLYCHITIEU.DTO.Response.category.CategoryResponse;
@@ -88,6 +89,17 @@ public class AdminController {
                 .message("Xóa danh mục thành công")
                 .build();
 
+
+    }
+    @PostMapping(value = "/import-categories", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<ImportResultDto> importCategories(
+            @RequestPart("file") MultipartFile file) {
+        ImportResultDto result = adminService.importFromExcel(file);
+        return ApiResponse.<ImportResultDto>builder()
+                .success(true)
+                .data(result)
+                .build();
 
     }
 }

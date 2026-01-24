@@ -142,8 +142,8 @@ User user=userRepository.findById(userId).orElseThrow(()->new AppException(Error
        Category category =categoryRepository.findByOwnerIdAndId(userId,categoryId);
         user.getCategories().removeIf(c -> Objects.equals(c.getId(), categoryId));
         userRepository.save(user);
-        List<Transaction> kq =transactionRepository.deleteAllByCategoryId(categoryId);
+        transactionRepository.deleteAllByCategoryId(categoryId);
 
-            categoryRepository.deleteById(categoryId);
+        categoryRepository.deleteById(categoryId);
     }
 }

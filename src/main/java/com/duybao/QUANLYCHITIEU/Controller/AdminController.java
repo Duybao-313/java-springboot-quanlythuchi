@@ -5,6 +5,7 @@ import com.duybao.QUANLYCHITIEU.DTO.Response.Admin.UserSummaryDto;
 import com.duybao.QUANLYCHITIEU.DTO.Response.ApiResponse;
 import com.duybao.QUANLYCHITIEU.DTO.Response.category.CategoryResponse;
 import com.duybao.QUANLYCHITIEU.DTO.request.CategoryRequest;
+import com.duybao.QUANLYCHITIEU.DTO.request.admin.CategoryUpdateRequest;
 import com.duybao.QUANLYCHITIEU.DTO.request.admin.UserUpdateRequest;
 import com.duybao.QUANLYCHITIEU.Service.AdminService;
 import jakarta.validation.Valid;
@@ -65,7 +66,7 @@ public class AdminController {
     @PostMapping(value = "/update-global-category", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<Void> createCategory(
             @RequestPart(name = "file", required = false) MultipartFile file,
-            @RequestPart(name = "data") @Valid CategoryRequest request) throws IOException {
+            @RequestPart(name = "data") @Valid CategoryUpdateRequest request) throws IOException {
         adminService.UpdateCate(request, file);
         return ApiResponse.<Void>builder()
                 .success(true)

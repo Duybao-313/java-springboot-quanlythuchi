@@ -5,6 +5,7 @@ import com.duybao.QUANLYCHITIEU.DTO.Response.Admin.AdminDashboardOverview;
 import com.duybao.QUANLYCHITIEU.DTO.Response.Admin.UserSummaryDto;
 import com.duybao.QUANLYCHITIEU.DTO.Response.category.CategoryResponse;
 import com.duybao.QUANLYCHITIEU.DTO.request.CategoryRequest;
+import com.duybao.QUANLYCHITIEU.DTO.request.admin.CategoryUpdateRequest;
 import com.duybao.QUANLYCHITIEU.DTO.request.admin.UserUpdateRequest;
 import com.duybao.QUANLYCHITIEU.Exception.AppException;
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
@@ -26,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -96,34 +98,32 @@ public class AdminService {
         return categoryResponseList;
 
     }
-    public void UpdateCate(CategoryRequest req, MultipartFile file) throws IOException {
-//        var icon=imageService.uploadImage(file,"QLCT-image");
-////        create
-//        if (!req.isUpdateFlag()){
-//        if (categoryRepository.existsByNameIgnoreCase(req.getName())) {
-//            throw new AppException(ErrorCode.CATEGORY_EXIST);
-//        }
-//
-//        Category category=Category.builder()
-//                .owner(null)
-//                .name(req.getName())
-//                .type(req.getType())
-//                .iconUrl(icon)
-//            .build();
-//            categoryRepository.save(category);
-//
-//        }
-////        update
-//        else  {
-//            Category category=categoryRepository.findById(req.getId()).orElseThrow(()->new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-//            category.setName(req.getName());
-//            category.setType(req.getType());
-//            category.setIconUrl(icon);
-//            categoryRepository.save(category);
-//        }
+    public void UpdateCate(CategoryUpdateRequest req, MultipartFile file) throws IOException {
 
-
+            Category category=categoryRepository.findById(req.getId()).orElseThrow(()->new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+        String icon = category.getIconUrl();
+        if(file!=null){
+            icon=imageService.uploadImage(file,"QLCT-image");
+        }
+            category.setName(req.getName());
+            category.setType(req.getType());
+            category.setIconUrl(icon);
+            categoryRepository.save(category);
     }
+
+    public void deleteCategoryByAdmin(Long userId,Long id){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        categoryRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        Category category =categoryRepository.findByOwnerIdAndId(userId,id);
+        user.getCategories().removeIf(c -> Objects.equals(c.getId(), id));
+        userRepository.save(user);
+        transactionRepository.deleteAllByCategoryId(id);
+        categoryRepository.delete(category);
+
+        }
+
 
     }
 

@@ -86,7 +86,7 @@ public class AdminService {
             user.setRole(role);
             user.setUpdatedAt(LocalDateTime.now());
             if (userRepository.existsByEmailAndIdNot(req.getEmail(), req.getId())) {
-                throw new AppException(ErrorCode.INVALID_REQUEST);
+                throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
             }
 
             userRepository.save(user);
@@ -115,12 +115,10 @@ public class AdminService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         categoryRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-
-        Category category =categoryRepository.findByOwnerIdAndId(userId,id);
         user.getCategories().removeIf(c -> Objects.equals(c.getId(), id));
         userRepository.save(user);
         transactionRepository.deleteAllByCategoryId(id);
-        categoryRepository.delete(category);
+        categoryRepository.deleteById(id);
 
         }
 

@@ -63,7 +63,10 @@ public class UserCategoryServiceImpl implements UserCategoryService {
             throw new AppException(ErrorCode.CATEGORY_EXIST);
         }
 User user=userRepository.findById(userId).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
-
+        if(user.getRole().getName().equals("ROLE_ADMIN"))
+        {
+            user=null;
+        }
         // 2. Tạo category mới với tên **nguyên gốc từ req** (không lưu normalized)
         String icon=null;
         if(file!=null) {
@@ -83,20 +86,20 @@ User user=userRepository.findById(userId).orElseThrow(()->new AppException(Error
         } catch (DataIntegrityViolationException | ConstraintViolationException ex) {
             throw new AppException(ErrorCode.CATEGORY_EXIST);
         }
+        if(user!=null) {
+            Long catId = category.getId();
+            boolean mappingExists = user.getCategories().stream()
+                    .anyMatch(c -> Objects.equals(c.getId(), catId));
 
-        Long catId = category.getId();
-        boolean mappingExists = user.getCategories().stream()
-                .anyMatch(c -> Objects.equals(c.getId(), catId));
-
-        if (!mappingExists) {
-            user.getCategories().add(category);
-            if (category.getUsers() != null) {
-                category.getUsers().add(user);
+            if (!mappingExists) {
+                user.getCategories().add(category);
+                if (category.getUsers() != null) {
+                    category.getUsers().add(user);
+                }
+                userRepository.save(user);
+                userRepository.flush();
             }
-            userRepository.save(user);
-            userRepository.flush();
         }
-
         return categoryMapper.toDTO(category);
     }
     @Transactional

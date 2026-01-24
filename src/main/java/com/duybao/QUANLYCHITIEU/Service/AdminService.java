@@ -97,30 +97,30 @@ public class AdminService {
 
     }
     public void UpdateCate(CategoryRequest req, MultipartFile file) throws IOException {
-        var icon=imageService.uploadImage(file,"QLCT-image");
-//        create
-        if (!req.isUpdateFlag()){
-        if (categoryRepository.existsByNameIgnoreCase(req.getName())) {
-            throw new AppException(ErrorCode.CATEGORY_EXIST);
-        }
-
-        Category category=Category.builder()
-                .owner(null)
-                .name(req.getName())
-                .type(req.getType())
-                .iconUrl(icon)
-            .build();
-            categoryRepository.save(category);
-
-        }
-//        update
-        else  {
-            Category category=categoryRepository.findById(req.getId()).orElseThrow(()->new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-            category.setName(req.getName());
-            category.setType(req.getType());
-            category.setIconUrl(icon);
-            categoryRepository.save(category);
-        }
+//        var icon=imageService.uploadImage(file,"QLCT-image");
+////        create
+//        if (!req.isUpdateFlag()){
+//        if (categoryRepository.existsByNameIgnoreCase(req.getName())) {
+//            throw new AppException(ErrorCode.CATEGORY_EXIST);
+//        }
+//
+//        Category category=Category.builder()
+//                .owner(null)
+//                .name(req.getName())
+//                .type(req.getType())
+//                .iconUrl(icon)
+//            .build();
+//            categoryRepository.save(category);
+//
+//        }
+////        update
+//        else  {
+//            Category category=categoryRepository.findById(req.getId()).orElseThrow(()->new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+//            category.setName(req.getName());
+//            category.setType(req.getType());
+//            category.setIconUrl(icon);
+//            categoryRepository.save(category);
+//        }
 
 
     }

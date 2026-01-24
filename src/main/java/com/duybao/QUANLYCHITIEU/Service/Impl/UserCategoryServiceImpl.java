@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,7 +46,7 @@ public class UserCategoryServiceImpl implements UserCategoryService {
 
     }
     @Transactional
-    public CategoryResponse createAndAssignCategory(Long userId, CategoryRequest req, MultipartFile file) {
+    public CategoryResponse createAndAssignCategory(Long userId, CategoryRequest req, MultipartFile file) throws IOException {
 
         String rawName = Optional.ofNullable(req.getName())
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_REQUEST));
@@ -62,14 +63,11 @@ public class UserCategoryServiceImpl implements UserCategoryService {
             throw new AppException(ErrorCode.CATEGORY_EXIST);
         }
 User user=userRepository.findById(userId).orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUND));
+
         // 2. Tạo category mới với tên **nguyên gốc từ req** (không lưu normalized)
         String icon=null;
-        if(file!=null){
-        try{
-            icon=imageService.uploadImage(file,"QLCT-image");
-        } catch (Exception ex) {
-            throw  new AppException(ErrorCode.READ_FILE_ERROR);
-        }
+        if(file!=null) {
+            icon = imageService.uploadImage(file, "QLCT-image");
         }
         Category category = Category.builder()
                 .name(rawName)

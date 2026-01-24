@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryRequest {
-    private Long id;
     @NotBlank(message = "Tên không được để trống")
     private String name;
 
@@ -20,7 +19,6 @@ public class CategoryRequest {
     private TransactionType type; // EXPENSE hoặc INCOME
 
     private String color;
-    private boolean UpdateFlag;
 
     private static final Pattern MULTI_SPACE = Pattern.compile("\\s+");
     private static final Pattern DIACRITICS = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");

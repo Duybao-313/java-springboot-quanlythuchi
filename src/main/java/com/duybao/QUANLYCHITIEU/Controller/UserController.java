@@ -22,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -99,8 +100,8 @@ public class UserController {
     @PostMapping("/categories")
     public ApiResponse<CategoryResponse> createCategoryForMe(
             @RequestPart(name = "file", required = false) MultipartFile file,
-            @RequestPart(name = "data", required = true)  @Valid CategoryRequest request,
-            @AuthenticationPrincipal User userDetails) {
+            @RequestPart(name = "data", required = false)  @Valid CategoryRequest request,
+            @AuthenticationPrincipal User userDetails) throws IOException {
 
         Long userId = userDetails.getId();
         CategoryResponse res = userCategoryService.createAndAssignCategory(userId, request, file);

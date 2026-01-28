@@ -1,5 +1,7 @@
 package com.duybao.QUANLYCHITIEU.Controller;
 
+import com.duybao.QUANLYCHITIEU.DTO.Response.budget.CreateBudgetResponse;
+import com.duybao.QUANLYCHITIEU.DTO.request.CreateBudgetRequest;
 import com.duybao.QUANLYCHITIEU.Model.User;
 import com.duybao.QUANLYCHITIEU.DTO.Response.ApiResponse;
 import com.duybao.QUANLYCHITIEU.DTO.Response.budget.BudgetResponse;
@@ -17,13 +19,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BudgetController {
     private final BudgetService budgetService;
-
     @PostMapping
-    public ApiResponse<BudgetResponse> createBudget(@RequestBody BudgetRequest request,
-                                                    @AuthenticationPrincipal User userDetails) {
-        return ApiResponse.<BudgetResponse>builder()
+    public ApiResponse<CreateBudgetResponse> createBudget(@RequestBody CreateBudgetRequest request,
+                                                          @AuthenticationPrincipal User user) {
+        return ApiResponse.<CreateBudgetResponse>builder()
                 .message("Tạo ngân sách thành công")
-                .data(budgetService.createBudget(userDetails.getId(), request))
+                .data(budgetService.createBudget( request, user.getId()))
                 .success(true)
                 .code(200)
                 .timestamp(LocalDateTime.now())

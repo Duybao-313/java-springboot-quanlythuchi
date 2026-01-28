@@ -18,6 +18,6 @@ public class TransferRequest {
 
     @NotNull(message = "Ví không được để trống")
     private Long walletIdTransfer;
-    @NotNull(message = "Ví không được để trống")
+    @NotNull(message = "Ví nhận không được để trống")
     private Long walletIdReceive;
 }

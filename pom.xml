@@ -121,6 +121,7 @@
             <scope>test</scope>
         </dependency>
 
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
@@ -142,9 +143,22 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <!--jwt-->
+<!--            <plugin>-->
+<!--                <groupId>org.flywaydb</groupId>-->
+<!--                <artifactId>flyway-maven-plugin</artifactId>-->
+<!--                <version>9.16.0</version> &lt;!&ndash; chọn phiên bản tương thích &ndash;&gt;-->
+<!--                <configuration>-->
+<!--                    <url>jdbc:mysql://localhost:3306/qlct2?serverTimezone=UTC</url>-->
+<!--                    <user>root</user>-->
+<!--                    <password>123456</password>-->
+<!--                    <schemas>-->
+<!--                        <schema>qlct2</schema>-->
+<!--                    </schemas>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
 
         </plugins>
     </build>
+
 
 </project>

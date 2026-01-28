@@ -15,7 +15,7 @@ public class PassWordValidator implements ConstraintValidator<PassWordMin,String
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
         if(s==null  )
             return true;
-        return s.length() > min;
+        return s.length() >= min;
     }
 
 

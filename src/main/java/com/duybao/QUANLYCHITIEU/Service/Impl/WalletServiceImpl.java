@@ -43,14 +43,16 @@ public class WalletServiceImpl implements WalletService {
                 throw  new AppException(ErrorCode.READ_FILE_ERROR);
             }
         }
-
-        Wallet wallet = Wallet.builder()
+      if(  walletRepository.existsByNameAndUser(request.getName(),user)){
+          throw new AppException(ErrorCode.WALLET_NAME_EXISTS);
+      }
+                Wallet wallet = Wallet.builder()
                 .name(request.getName())
                 .balance(request.getBalance())
                 .type(request.getType())
                 .iconUrl(icon)
-                .description(request.getDescription())
                 .createdAt(LocalDateTime.now())
+                .description(request.getDescription())
                 .user(user)
                 .build();
         walletRepository.save(wallet);
@@ -62,20 +64,21 @@ public class WalletServiceImpl implements WalletService {
         return walletMapper.toDTOs(walletRepository.findByUserId(userId));
     }
     public WalletResponse updateWallet(Long userId, Long id, WalletRequest request) {
-        Wallet wallet = walletRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.WALLET_NOT_FOUND));
-
-        if (!wallet.getUser().getId().equals(userId)) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
-
-        wallet.setName(request.getName());
-        wallet.setBalance(request.getBalance());
-        wallet.setType(request.getType());
-        wallet.setIconUrl(request.getIconUrl());
-
-        Wallet updated = walletRepository.save(wallet);
-        return walletMapper.toDTO(updated);
+//        Wallet wallet = walletRepository.findById(id)
+//                .orElseThrow(() -> new AppException(ErrorCode.WALLET_NOT_FOUND));
+//
+//        if (!wallet.getUser().getId().equals(userId)) {
+//            throw new AppException(ErrorCode.UNAUTHENTICATED);
+//        }
+//
+//        wallet.setName(request.getName());
+//        wallet.setBalance(request.getBalance());
+//        wallet.setType(request.getType());
+//        wallet.setIconUrl(request.getIconUrl());
+//
+//        Wallet updated = walletRepository.save(wallet);
+//        return walletMapper.toDTO(updated);
+        return null;
     }
 
     public void deleteWallet(Long userId, Long id) {

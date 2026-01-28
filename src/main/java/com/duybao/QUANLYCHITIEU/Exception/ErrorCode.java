@@ -22,17 +22,28 @@ public enum ErrorCode {
     INTERNAL_ERROR(1013,"Lỗi nội bộ", HttpStatus.INTERNAL_SERVER_ERROR),
     CATEGORY_EXIST(1014,"Danh mục đã tồn tại", HttpStatus.BAD_REQUEST),
     CATEGORY_ALREADY_ASSIGNED(1015,"Đã gán danh mục này", HttpStatus.CONFLICT),
-    AMOUNT_NOT_NEGATIVE(1016,"Số tiền không được âm hoặc =0", HttpStatus.BAD_REQUEST),
+    AMOUNT_NOT_NEGATIVE(1016,"Số tiền phải >0", HttpStatus.BAD_REQUEST),
     READ_FILE_ERROR(1017,"Lỗi khi đọc file", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_REQUEST(1018,"Yêu cầu không hợp lệ",HttpStatus.BAD_REQUEST),
     USERNAME_NOT_NULL(1019,"Tài khoản không được để trống",HttpStatus.BAD_REQUEST),
     USERNAME_TOO_SHORT(1020,"Tài khoản PHẢI NHIỀU HƠN 3 KÝ TỰ",HttpStatus.BAD_REQUEST),
-    NAME_NOT_NULL(1021,"HỌ TÊN KHÔNG ĐƯỢC ĐỂ TRỐNG",HttpStatus.BAD_REQUEST),
+    NAME_NOT_NULL(1021,"TÊN KHÔNG ĐƯỢC ĐỂ TRỐNG",HttpStatus.BAD_REQUEST),
     PASSWORD_NOT_NULL(1022,"Mật khẩu không đưuọc để trống",HttpStatus.BAD_REQUEST),
     PASSWORD_TOO_SHORT(1023,"Mật khẩu phải trên 6 ký tự",HttpStatus.BAD_REQUEST),
     EMAIL_INVALID(1024,"Email không hợp lệ",HttpStatus.BAD_REQUEST),
     INVALID_USERNAME(1024,"Tài khoản không hợp lệ",HttpStatus.BAD_REQUEST),
-    SAME_PASSWORD(1025,"Mật khẩu bị trùng",HttpStatus.BAD_REQUEST)
+    SAME_PASSWORD(1025,"Mật khẩu bị trùng",HttpStatus.BAD_REQUEST),
+    INVALID_PERIOD(1026,"Loại kỳ không hợp lệ",HttpStatus.BAD_REQUEST),
+    WALLET_NAME_EXISTS(1027,"Tên ví đã được sử dụng", HttpStatus.BAD_REQUEST),
+    NAME_TOO_LONG(1028,"Tên quá dài", HttpStatus.BAD_REQUEST),
+    INVALID_TYPE(1029,"Loại không hợp lệ",HttpStatus.BAD_REQUEST),
+    TYPE_NOT_NULL(1030,"LOẠI KHÔNG ĐƯỢC ĐỂ TRỐNG",HttpStatus.BAD_REQUEST),
+    EMAIL_NOT_NULL(1031,"EMAIL KHÔNG ĐƯỢC ĐỂ TRỐNG",HttpStatus.BAD_REQUEST),
+    PHONE_INVALID(1032,"Số điện thoại không hợp lệ",HttpStatus.BAD_REQUEST),
+    ADDRESS_TOO_LONG(1028,"Địa chỉ quá dài", HttpStatus.BAD_REQUEST),
+
+
+
 
 
 

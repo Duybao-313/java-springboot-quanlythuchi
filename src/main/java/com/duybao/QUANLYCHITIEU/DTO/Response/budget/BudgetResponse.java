@@ -1,5 +1,6 @@
 package com.duybao.QUANLYCHITIEU.DTO.Response.budget;
 
+import com.duybao.QUANLYCHITIEU.Enum.PeriodType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,8 +11,9 @@ import java.time.LocalDate;
 @Builder
 public class BudgetResponse {
     private Long id;
-    private BigDecimal amountLimit;
+    private String name;
+    private BigDecimal amount;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String categoryName;
+    private PeriodType periodType;
 }

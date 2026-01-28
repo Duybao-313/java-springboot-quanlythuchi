@@ -3,6 +3,7 @@ package com.duybao.QUANLYCHITIEU.Config;
 import com.duybao.QUANLYCHITIEU.Enum.UserStatus;
 import com.duybao.QUANLYCHITIEU.Exception.AppException;
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
+import com.duybao.QUANLYCHITIEU.Model.Role;
 import com.duybao.QUANLYCHITIEU.Model.User;
 import com.duybao.QUANLYCHITIEU.Repository.RoleRepository;
 import com.duybao.QUANLYCHITIEU.Repository.UserRepository;
@@ -27,11 +28,19 @@ public class ApplicationInitConfig {
 
         return args -> {
             if(userRepository.findByUsername("admin").isEmpty()) {
+                Role role=Role.builder()
+                        .name("ROLE_USER")
+                        .build();
+                Role role2=Role.builder()
+                        .name("ROLE_ADMIN")
+                        .build();
+                roleRepository.save(role);
+                roleRepository.save(role2);
                 User user= User.builder()
                         .username("admin")
                         .email("admin@admin.com")
                         .password(passwordEncoder.encode("admin"))
-                        .role(roleRepository.findById(2).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND)))
+                        .role(roleRepository.findByName("ROLE_ADMIN").orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND)))
                         .status(UserStatus.ACTIVE)
                         .build();
                 userRepository.save(user);

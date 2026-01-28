@@ -47,6 +47,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO updateUser(Long id, UpdateUserRequest userRequest) {
         User userStore = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+       if (userRepository.findByEmail(userRequest.getEmail()).isPresent()){
+           throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
+       }
         userMapper.update(userRequest, userStore);
         userRepository.save(userStore);
         return userMapper.toDTO(userStore);

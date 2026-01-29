@@ -41,6 +41,9 @@ public enum ErrorCode {
     EMAIL_NOT_NULL(1031,"EMAIL KHÔNG ĐƯỢC ĐỂ TRỐNG",HttpStatus.BAD_REQUEST),
     PHONE_INVALID(1032,"Số điện thoại không hợp lệ",HttpStatus.BAD_REQUEST),
     ADDRESS_TOO_LONG(1028,"Địa chỉ quá dài", HttpStatus.BAD_REQUEST),
+    NEWPASS_NOT_SAME(1028,"Mật khẩu xác nhận phải giống nhau", HttpStatus.BAD_REQUEST),
+    PASSWORD_TOO_LONG(1023,"Mật khẩu quá dài",HttpStatus.BAD_REQUEST),
+
 
 
 

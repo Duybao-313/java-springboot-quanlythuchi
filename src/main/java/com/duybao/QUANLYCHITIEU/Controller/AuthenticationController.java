@@ -80,7 +80,7 @@ public class AuthenticationController {
                 .build();
 
 }
-    @PostMapping ("/change-password") ApiResponse<Void> changePassword(@AuthenticationPrincipal User user,@RequestBody ChangePasswordRequest request)  {
+    @PostMapping ("/change-password") ApiResponse<Void> changePassword(@AuthenticationPrincipal User user,@RequestBody @Valid ChangePasswordRequest request)  {
        var res= authenticationService.changePassword(request,user.getId());
         return ApiResponse.<Void>builder()
                 .success(res)

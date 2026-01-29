@@ -1,5 +1,6 @@
 package com.duybao.QUANLYCHITIEU.Service.Impl;
 
+import com.duybao.QUANLYCHITIEU.DTO.Response.budget.BudgetDto;
 import com.duybao.QUANLYCHITIEU.DTO.Response.budget.CreateBudgetResponse;
 import com.duybao.QUANLYCHITIEU.DTO.request.CreateBudgetRequest;
 import com.duybao.QUANLYCHITIEU.Enum.BudgetChangeType;
@@ -14,6 +15,8 @@ import com.duybao.QUANLYCHITIEU.DTO.request.BudgetRequest;
 import com.duybao.QUANLYCHITIEU.Service.BudgetService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,23 +36,12 @@ public class BudgetServiceImpl implements BudgetService {
     private final BudgetUsageRepository budgetUsageRepository;
     private final BudgetHistoryRepository budgetHistoryRepository;
     private final ObjectMapper objectMapper; // for optional serialization
+    private final UserRepository userRepository;
 
 
-//    public BudgetResponse createBudget(Long userId, BudgetRequest request) {
-//        Category category = categoryRepository.findById(request.getCategoryId())
-//                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-//
-//        User user = User.builder().id(userId).build();
-//        Budget budget = budgetMapper.toEntity(request, user, category);
-//
-//        Budget saved = budgetRepository.save(budget);
-//        return budgetMapper.toResponse(saved);
-//    }
 
     public List<BudgetResponse> getBudgets(Long userId) {
-//        return budgetRepository.findByOwnerIdAndStatus(userId, BudgetStatus.ACTIVE).stream()
-//                .map(budgetMapper::toResponse)
-//                .toList();
+
         return null;
     }
 
@@ -64,11 +56,7 @@ public class BudgetServiceImpl implements BudgetService {
             throw new AppException(ErrorCode.INVALID_PERIOD);
         }
 
-        // 2. Optional quota check (example)
-        // long existing = budgetRepository.countByOwnerId(req.getOwnerId());
-        // if (existing >= SOME_QUOTA) throw new BusinessException("quota exceeded");
 
-        // 3. Create Budget entity
         Budget budget = Budget.builder()
                 .name(req.getName())
                 .ownerId(actorUserId)
@@ -81,7 +69,6 @@ public class BudgetServiceImpl implements BudgetService {
 
         budgetRepository.save(budget);
 
-        // 4. Persist scopes
         if (req.getScopes() != null) {
             List<BudgetScope> scopes = req.getScopes().stream()
                     .map(s -> BudgetScope.builder()
@@ -133,30 +120,34 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     public BudgetResponse updateBudget(Long userId, Long id, BudgetRequest request) {
-//        Budget budget = budgetRepository.findById(id)
-//                .orElseThrow(() -> new AppException(ErrorCode.BUDGET_NOT_FOUND));
-//
-//        if (!budget.getUser().getId().equals(userId)) {
-//            throw new  AppException(ErrorCode.UNAUTHENTICATED);
-//        }
-//
-//        budget.setAmountLimit(request.getAmountLimit());
-//        budget.setStartDate(request.getStartDate());
-//        budget.setEndDate(request.getEndDate());
-//
-//        Budget updated = budgetRepository.save(budget);
-//        return budgetMapper.toResponse(updated);
+
         return null;
     }
 
     public void deleteBudget(Long userId, Long id) {
-//        Budget budget = budgetRepository.findById(id)
-//                .orElseThrow(() -> new AppException(ErrorCode.BUDGET_NOT_FOUND));
-//
-//        if (!budget.getUser().getId().equals(userId)) {
-//            throw new AppException(ErrorCode.UNAUTHENTICATED);
-//        }
-//
-//        budgetRepository.delete(budget);
+
     }
+    public Page<BudgetDto> getBudgetsForCurrentUser(Pageable pageable,Long userId) {
+
+        return getBudgetsForUser(userId, pageable);
+    }
+
+    @Override
+    public Page<BudgetDto> getBudgetsForUser(Long userId, Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        Page<Budget> page = budgetRepository.findByOwnerId(userId, pageable);
+        return page.map(budgetMapper::toDto);
+    }
+
+    @Override
+    public BudgetDto getBudgetByIdForUser(Long budgetId, Long userId) {
+        Budget b = budgetRepository.findById(budgetId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        return budgetMapper.toDto(b);
+    }
+
+
 }

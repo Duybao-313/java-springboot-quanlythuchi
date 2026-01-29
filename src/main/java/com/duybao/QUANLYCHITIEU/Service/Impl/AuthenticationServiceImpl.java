@@ -132,7 +132,7 @@ catch (BadCredentialsException e) {
         if( !passwordEncoder.matches(oldPass,user.getPassword()))
             throw new AppException(ErrorCode.PASSWORD_INCORRECT);
         if (!newPass1.equals(newPass2))
-            throw new AppException(ErrorCode.INVALID_REQUEST);
+            throw new AppException(ErrorCode.NEWPASS_NOT_SAME);
         if(newPass1.equals(oldPass))
             throw new AppException(ErrorCode.SAME_PASSWORD);
         user.setPassword(passwordEncoder.encode(newPass1));

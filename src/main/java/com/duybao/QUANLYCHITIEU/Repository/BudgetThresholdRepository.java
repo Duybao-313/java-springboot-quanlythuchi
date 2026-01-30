@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface BudgetThresholdRepository extends JpaRepository<BudgetThreshold, Long> {
     List<BudgetThreshold> findByBudgetId(Long budgetId);
+
+    void deleteByBudgetId(Long budgetId);
 }

@@ -9,4 +9,5 @@ import java.util.List;
 public interface BudgetScopeRepository extends JpaRepository<BudgetScope, Long> {
     List<BudgetScope> findByRefIdAndScopeType(Long refId, ScopeType scopeType);
     List<BudgetScope> findByBudgetId(Long budgetId);
+    void deleteByBudgetId(Long budgetId);
 }

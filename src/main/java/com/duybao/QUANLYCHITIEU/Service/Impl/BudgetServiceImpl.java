@@ -1,8 +1,11 @@
 package com.duybao.QUANLYCHITIEU.Service.Impl;
 
+import com.duybao.QUANLYCHITIEU.DTO.Response.budget.BudgetDetailResponse;
 import com.duybao.QUANLYCHITIEU.DTO.Response.budget.BudgetDto;
 import com.duybao.QUANLYCHITIEU.DTO.Response.budget.CreateBudgetResponse;
 import com.duybao.QUANLYCHITIEU.DTO.request.CreateBudgetRequest;
+import com.duybao.QUANLYCHITIEU.DTO.request.ThresholdDto;
+import com.duybao.QUANLYCHITIEU.DTO.request.UpdateBudgetRequest;
 import com.duybao.QUANLYCHITIEU.Enum.BudgetChangeType;
 import com.duybao.QUANLYCHITIEU.Enum.BudgetStatus;
 import com.duybao.QUANLYCHITIEU.Exception.AppException;
@@ -22,7 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,10 +47,6 @@ public class BudgetServiceImpl implements BudgetService {
 
 
 
-    public List<BudgetResponse> getBudgets(Long userId) {
-
-        return null;
-    }
 
 
     @Transactional
@@ -118,14 +121,89 @@ public class BudgetServiceImpl implements BudgetService {
 
         return new CreateBudgetResponse(budget.getId(), budget.getStatus());
     }
+@Transactional
+    public void updateBudget(User user, Long id, UpdateBudgetRequest request) {
+        Budget budget=budgetRepository.findById(id).orElseThrow(()->new AppException(ErrorCode.BUDGET_NOT_FOUND));
+        if(!Objects.equals(user.getRole().getName(), "ROLE_ADMIN") && !Objects.equals(user.getId(), budget.getOwnerId()))
+        {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+//        VALIDATE
+    if(request.getStartDate().isAfter(request.getEndDate()))
+    {  throw new AppException(ErrorCode.INVALID_REQUEST);}
+//
+        budget.setAmount(request.getAmount());
+        budget.setName(request.getName());
+        budget.setStartDate(request.getStartDate());
+        budget.setEndDate(request.getEndDate());
+        budget.setUpdatedAt(LocalDateTime.now());
+        budget.setPeriodType(request.getPeriodType());
+        budget.setStatus(request.getBudgetStatus());
+        if (request.getScopes() != null) {
+            budgetScopeRepository.deleteByBudgetId(id);
+            List<BudgetScope> scopes = request.getScopes().stream()
+                    .map(s -> BudgetScope.builder()
+                            .budget(budget)
+                            .scopeType(s.getScopeType())
+                            .refId(s.getRefId())
+                            .build())
+                    .toList();
+            if (budget.getScopes() == null) {
+                budget.setScopes(new ArrayList<>());
+            } else {
+                budget.getScopes().clear(); // Hibernate will mark orphans for deletion
+            }
+            budget.getScopes().addAll(scopes);
+        }
 
-    public BudgetResponse updateBudget(Long userId, Long id, BudgetRequest request) {
+        if (request.getThresholds() != null) {
+            budgetThresholdRepository.deleteByBudgetId(id);
+            List<BudgetThreshold> thresholds = request.getThresholds().stream()
+                    .map(t -> BudgetThreshold.builder()
+                            .budget(budget)
+                            .percent(t.getPercent())
+                            .action(t.getAction())
+                            .build())
+                    .toList();
+            if (budget.getThresholds() == null) {
+                budget.setThresholds(new ArrayList<>());
+            } else {
+                budget.getThresholds().clear();
+            }
+            budget.getThresholds().addAll(thresholds);
+        }
 
-        return null;
+
+        budgetRepository.save(budget);
+
+        LocalDate periodStart = request.getStartDate();
+        LocalDate periodEnd = request.getEndDate();
+        BudgetUsage usage = budgetUsageRepository.findByBudgetAndPeriodStartAndPeriodEnd(budget, periodStart, periodEnd)
+                .orElseGet(() -> BudgetUsage.builder()
+                        .budget(budget)
+                        .periodStart(periodStart)
+                        .periodEnd(periodEnd)
+                        .spentAmount(BigDecimal.ZERO)
+                        .build());
+        usage = budgetUsageRepository.save(usage);
+
+        String note = String.format("update budget amount=%s period=%s->%s", request.getAmount(), periodStart, periodEnd);
+        BudgetHistory history = BudgetHistory.builder()
+                .budget(budget)
+                .changedBy(user.getId())
+                .changeType(BudgetChangeType.CREATE)
+                .note(note)
+                .build();
+        budgetHistoryRepository.save(history);
     }
 
-    public void deleteBudget(Long userId, Long id) {
-
+    public void deleteBudget(Long userId, Long budget_id) {
+        Budget b=budgetRepository.findById(budget_id).orElseThrow(()->new AppException(ErrorCode.BUDGET_NOT_FOUND));
+       User u=userRepository.findById(userId).orElseThrow(()->new AppException(ErrorCode.UNAUTHENTICATED));
+        if(!Objects.equals(u.getRole().getName(), "ROLE_ADMIN"))
+        {if(!b.getOwnerId().equals(userId))
+        { throw new AppException(ErrorCode.UNAUTHENTICATED);}}
+        budgetRepository.delete(b);
     }
     public Page<BudgetDto> getBudgetsForCurrentUser(Pageable pageable,Long userId) {
 
@@ -142,11 +220,23 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public BudgetDto getBudgetByIdForUser(Long budgetId, Long userId) {
+    public BudgetDetailResponse getBudgetByIdForUser(Long budgetId, Long userId) {
         Budget b = budgetRepository.findById(budgetId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-        return budgetMapper.toDto(b);
+                .orElseThrow(() -> new AppException(ErrorCode.BUDGET_NOT_FOUND));
+           User u=userRepository.findById(userId).orElseThrow();
+            if(!Objects.equals(u.getRole().getName(), "ROLE_ADMIN"))
+             {if(!b.getOwnerId().equals(userId))
+                 { throw new AppException(ErrorCode.UNAUTHENTICATED);}}
+        return BudgetDetailResponse.builder()
+                .name(b.getName())
+                .budgetStatus(b.getStatus())
+                .thresholds(b.getThresholds().stream().map(budgetMapper::toThresholdDto).toList())
+                .scopes(b.getScopes().stream().map(budgetMapper::toScopeDto).toList())
+                .endDate(b.getEndDate())
+                .startDate(b.getStartDate())
+                .amount(b.getAmount())
+                .periodType(b.getPeriodType())
+                .build();
     }
 
 

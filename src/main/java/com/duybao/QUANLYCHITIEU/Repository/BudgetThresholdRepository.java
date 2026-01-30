@@ -9,4 +9,6 @@ public interface BudgetThresholdRepository extends JpaRepository<BudgetThreshold
     List<BudgetThreshold> findByBudgetId(Long budgetId);
 
     void deleteByBudgetId(Long budgetId);
+
+    List<BudgetThreshold> findByBudgetIdOrderByPercentAsc(Long id);
 }

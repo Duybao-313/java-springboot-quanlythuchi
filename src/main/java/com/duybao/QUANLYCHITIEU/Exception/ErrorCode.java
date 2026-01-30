@@ -43,19 +43,8 @@ public enum ErrorCode {
     ADDRESS_TOO_LONG(1028,"Địa chỉ quá dài", HttpStatus.BAD_REQUEST),
     NEWPASS_NOT_SAME(1028,"Mật khẩu xác nhận phải giống nhau", HttpStatus.BAD_REQUEST),
     PASSWORD_TOO_LONG(1023,"Mật khẩu quá dài",HttpStatus.BAD_REQUEST),
-
-
-
-
-
-
-
-
-
-
-
-
-    ;
+    BUDGET_UPDATE_FAILED(1023,"Cập nhật hạn mức thất bại",HttpStatus.EXPECTATION_FAILED),
+    NOTIFICATION_NOT_FOUND_OR_FORBIDDEN(1024,"Không có thông báo" ,HttpStatus.FORBIDDEN );
 
 
 

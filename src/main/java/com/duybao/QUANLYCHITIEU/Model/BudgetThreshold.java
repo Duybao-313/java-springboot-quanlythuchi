@@ -26,7 +26,19 @@ public class BudgetThreshold {
 
     @Column(length = 20, nullable = false)
     private BudgetAction action; // NOTIFY, BLOCK
+    // --- trigger fields ---
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean triggered = false;
 
+    @Column(name = "triggered_at")
+    private LocalDateTime triggeredAt;
+
+    @Column(name = "triggered_by", length = 50)
+    private String triggeredBy; // e.g., SYSTEM, USER, SCHEDULE
+
+    @Column(name = "triggered_usage_id")
+    private Long triggeredUsageId;
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 

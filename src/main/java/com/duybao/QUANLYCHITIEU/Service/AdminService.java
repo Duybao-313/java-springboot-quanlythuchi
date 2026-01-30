@@ -155,6 +155,9 @@ public class AdminService {
                     if (name == null || name.isBlank()) {
                         throw new IllegalArgumentException("name required");
                     }
+                    if(type==null||type.isBlank()){
+                        throw new IllegalArgumentException("type required");
+                    }
                     if(categoryRepository.findByNameIgnoreCase(name).isPresent())
                     {
                         throw new AppException(ErrorCode.INVALID_REQUEST);
@@ -165,7 +168,7 @@ public class AdminService {
 
                     c.setName(name.trim());
                     // nếu entity Category không có type/iconUrl/ownerId, bỏ hoặc map tương ứng
-                    c.setType(type == null ? null : TransactionType.valueOf(type.trim()));
+                    c.setType(TransactionType.valueOf(type.trim()));
                     c.setIconUrl(iconUrl == null ? null : iconUrl.trim());
                     c.setOwner(null);
 

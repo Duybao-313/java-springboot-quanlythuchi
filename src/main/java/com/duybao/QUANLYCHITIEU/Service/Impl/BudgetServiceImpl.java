@@ -3,18 +3,17 @@ package com.duybao.QUANLYCHITIEU.Service.Impl;
 import com.duybao.QUANLYCHITIEU.DTO.Response.budget.BudgetDetailResponse;
 import com.duybao.QUANLYCHITIEU.DTO.Response.budget.BudgetDto;
 import com.duybao.QUANLYCHITIEU.DTO.Response.budget.CreateBudgetResponse;
-import com.duybao.QUANLYCHITIEU.DTO.request.CreateBudgetRequest;
-import com.duybao.QUANLYCHITIEU.DTO.request.ThresholdDto;
-import com.duybao.QUANLYCHITIEU.DTO.request.UpdateBudgetRequest;
+import com.duybao.QUANLYCHITIEU.DTO.request.*;
 import com.duybao.QUANLYCHITIEU.Enum.BudgetChangeType;
 import com.duybao.QUANLYCHITIEU.Enum.BudgetStatus;
+import com.duybao.QUANLYCHITIEU.Enum.ScopeType;
+import com.duybao.QUANLYCHITIEU.Enum.TransactionType;
 import com.duybao.QUANLYCHITIEU.Exception.AppException;
 import com.duybao.QUANLYCHITIEU.Exception.ErrorCode;
 import com.duybao.QUANLYCHITIEU.Mappers.BudgetMapper;
 import com.duybao.QUANLYCHITIEU.Model.*;
 import com.duybao.QUANLYCHITIEU.Repository.*;
 import com.duybao.QUANLYCHITIEU.DTO.Response.budget.BudgetResponse;
-import com.duybao.QUANLYCHITIEU.DTO.request.BudgetRequest;
 import com.duybao.QUANLYCHITIEU.Service.BudgetService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +43,7 @@ public class BudgetServiceImpl implements BudgetService {
     private final BudgetThresholdRepository budgetThresholdRepository;
     private final BudgetUsageRepository budgetUsageRepository;
     private final BudgetHistoryRepository budgetHistoryRepository;
+    private final BudgetTransactionRepository budgetTransactionRepository;
     private final ObjectMapper objectMapper; // for optional serialization
     private final UserRepository userRepository;
 
@@ -58,6 +60,25 @@ public class BudgetServiceImpl implements BudgetService {
         if (req.getStartDate() == null || req.getEndDate() == null || req.getEndDate().isBefore(req.getStartDate())) {
             throw new AppException(ErrorCode.INVALID_PERIOD);
         }
+        if (req.getAmount() == null || req.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new AppException(ErrorCode.AMOUNT_NOT_NEGATIVE);
+        }
+        if (req.getStartDate() == null || req.getEndDate() == null || req.getEndDate().isBefore(req.getStartDate())) {
+            throw new AppException(ErrorCode.INVALID_PERIOD);
+        }
+
+        // --- NEW: validate scopes before saving budget ---
+        if (req.getScopes() != null) {
+            // Option A: check one-by-one (simple)
+            for (ScopeDto s : req.getScopes()) {
+                if (s.getScopeType() == ScopeType.CATEGORY) {
+                    Category cat = categoryRepository.findById(s.getRefId())
+                            .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+                    if (cat.getType() != TransactionType.EXPENSE) {
+                        throw new AppException(ErrorCode.INVALID_REQUEST);
+                    }
+                }
+            }}
 
 
         Budget budget = Budget.builder()
@@ -196,15 +217,19 @@ public class BudgetServiceImpl implements BudgetService {
                 .build();
         budgetHistoryRepository.save(history);
     }
-
+@Transactional
     public void deleteBudget(Long userId, Long budget_id) {
         Budget b=budgetRepository.findById(budget_id).orElseThrow(()->new AppException(ErrorCode.BUDGET_NOT_FOUND));
        User u=userRepository.findById(userId).orElseThrow(()->new AppException(ErrorCode.UNAUTHENTICATED));
         if(!Objects.equals(u.getRole().getName(), "ROLE_ADMIN"))
         {if(!b.getOwnerId().equals(userId))
         { throw new AppException(ErrorCode.UNAUTHENTICATED);}}
+        budgetTransactionRepository.deleteByBudgetId(b.getId());
         budgetRepository.delete(b);
     }
+
+
+
     public Page<BudgetDto> getBudgetsForCurrentUser(Pageable pageable,Long userId) {
 
         return getBudgetsForUser(userId, pageable);
@@ -227,6 +252,14 @@ public class BudgetServiceImpl implements BudgetService {
             if(!Objects.equals(u.getRole().getName(), "ROLE_ADMIN"))
              {if(!b.getOwnerId().equals(userId))
                  { throw new AppException(ErrorCode.UNAUTHENTICATED);}}
+
+        BigDecimal spent = getSpentForBudget(b, LocalDate.now());
+
+        BigDecimal amount = b.getAmount() == null ? BigDecimal.ZERO : b.getAmount();
+        BigDecimal remaining = amount.subtract(spent).max(BigDecimal.ZERO);
+        int percentUsed = amount.compareTo(BigDecimal.ZERO) > 0
+                ? spent.multiply(BigDecimal.valueOf(100)).divide(amount, 0, RoundingMode.DOWN).intValue()
+                : 0;
         return BudgetDetailResponse.builder()
                 .name(b.getName())
                 .budgetStatus(b.getStatus())
@@ -235,9 +268,37 @@ public class BudgetServiceImpl implements BudgetService {
                 .endDate(b.getEndDate())
                 .startDate(b.getStartDate())
                 .amount(b.getAmount())
+                .spent(spent)
+                .remaining(remaining)
+                .percentUsed(percentUsed)
                 .periodType(b.getPeriodType())
                 .build();
     }
 
 
+
+    public BigDecimal getSpentForBudget(Budget budget, LocalDate now) {
+        LocalDate periodStart = computePeriodStart(budget, now);
+        LocalDate periodEnd = computePeriodEnd(budget, now);
+
+        return budgetUsageRepository.findByBudgetAndPeriodStartAndPeriodEnd(budget, periodStart, periodEnd)
+                .map(BudgetUsage::getSpentAmount)
+                .orElse(BigDecimal.ZERO);
+    }
+    private LocalDate computePeriodStart(Budget b, LocalDate now) {
+        return switch (b.getPeriodType()) {
+            case MONTHLY -> now.withDayOfMonth(1);
+            case WEEKLY -> now.with(ChronoField.DAY_OF_WEEK, 1); // hoặc WeekFields
+            case ONE_TIME -> b.getStartDate();
+            default -> b.getStartDate();
+        };
+    }
+    private LocalDate computePeriodEnd(Budget b, LocalDate now) {
+        return switch (b.getPeriodType()) {
+            case MONTHLY -> now.withDayOfMonth(now.lengthOfMonth());
+            case WEEKLY -> computePeriodStart(b, now).plusDays(6);
+            case ONE_TIME -> b.getEndDate();
+            default -> b.getEndDate();
+        };
+    }
 }

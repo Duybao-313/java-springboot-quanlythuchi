@@ -19,6 +19,11 @@ import java.util.List;
 public class BudgetDetailResponse {
     private String name;
     private BigDecimal amount;
+    private BigDecimal spent;
+    private BigDecimal remaining;
+    private int percentUsed;
+
+
     private LocalDate startDate;
     private LocalDate endDate;
     private PeriodType periodType; // ONE_TIME, MONTHLY, WEEKLY
